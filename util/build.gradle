@@ -3,7 +3,7 @@ plugins {
 	id 'java'
 }
 
-group = 'com.yavlash.util.http'
+group = 'com.yavlash.util'
 version = '1.0.0-SNAPSHOT'
 sourceCompatibility = 17
 

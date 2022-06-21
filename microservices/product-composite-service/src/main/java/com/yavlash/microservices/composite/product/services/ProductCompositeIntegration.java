@@ -1,4 +1,4 @@
-package com.yavlash.microservices.core.product.services;
+package com.yavlash.microservices.composite.product.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yavlash.api.core.product.Product;

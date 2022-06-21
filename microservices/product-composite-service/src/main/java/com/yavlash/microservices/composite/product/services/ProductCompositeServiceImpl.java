@@ -1,4 +1,4 @@
-package com.yavlash.microservices.core.product.services;
+package com.yavlash.microservices.composite.product.services;
 
 import com.yavlash.api.composite.product.ProductAggregate;
 import com.yavlash.api.composite.product.ProductCompositeService;
@@ -11,10 +11,12 @@ import com.yavlash.api.core.review.Review;
 import com.yavlash.api.exceptions.NotFoundException;
 import com.yavlash.util.http.ServiceUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@RestController
 public class ProductCompositeServiceImpl implements ProductCompositeService {
     private final ServiceUtil serviceUtil;
     private final ProductCompositeIntegration integration;

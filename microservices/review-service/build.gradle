@@ -4,7 +4,7 @@ plugins {
 	id 'java'
 }
 
-group = 'com.yavlash.microservices.core.product'
+group = 'com.yavlash.microservices.core.review'
 version = '1.0.0-SNAPSHOT'
 sourceCompatibility = '17'
 

@@ -1,13 +1,12 @@
-package com.yavlash.api.core;
+package com.yavlash.microservices.core.recommendation;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ApiApplicationTests {
+class RecommendationServiceApplicationTests {
 
 	@Test
 	void contextLoads() {
 	}
-
 }
