@@ -1,12 +1,11 @@
 package com.yavlash.microservices.core.review.persistence;
 
-import org.springframework.data.annotation.Version;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
 @Entity
 @Table(name = "reviews", indexes = { @Index(name = "reviews_unique_idx", unique = true, columnList = "productId,reviewId") })

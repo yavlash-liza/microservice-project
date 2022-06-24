@@ -35,10 +35,9 @@ public class RecommendationServiceApplication {
 
 	@EventListener(ContextRefreshedEvent.class)
 	public void initIndicesAfterStartup() {
-
 		MappingContext<? extends MongoPersistentEntity<?>, MongoPersistentProperty> mappingContext = mongoTemplate.getConverter().getMappingContext();
 		IndexResolver resolver = new MongoPersistentEntityIndexResolver(mappingContext);
 		IndexOperations indexOps = mongoTemplate.indexOps(RecommendationEntity.class);
-		resolver.resolveIndexFor(RecommendationEntity.class).forEach(e -> indexOps.ensureIndex(e));
+		resolver.resolveIndexFor(RecommendationEntity.class).forEach(indexOps::ensureIndex);
 	}
 }

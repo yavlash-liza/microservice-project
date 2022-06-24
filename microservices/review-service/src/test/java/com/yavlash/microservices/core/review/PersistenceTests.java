@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,7 +35,6 @@ class PersistenceTests extends MySqlTestBase {
         savedEntity = repository.save(entity);
         assertEqualsReview(entity, savedEntity);
     }
-
 
     @Test
     void create() {
@@ -77,6 +77,14 @@ class PersistenceTests extends MySqlTestBase {
         //then
         assertThat(entityList, hasSize(1));
         assertEqualsReview(savedEntity, entityList.get(0));
+    }
+
+    @Test
+    void duplicateError() {
+        assertThrows(DataIntegrityViolationException.class, () -> {
+            ReviewEntity entity = new ReviewEntity(1, 2, "a", "s", "c");
+            repository.save(entity);
+        });
     }
 
     @Test
