@@ -37,7 +37,7 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
 
   mongodb:
-    image: mongo
+    image: mongo:latest
     mem_limit: 512m
     ports:
       - "27017:27017"
