@@ -1,6 +1,6 @@
-package com.yavlash.microservices.core.product;
+package com.yavlash.microservices.core.recommendation;
 
-import com.yavlash.microservices.core.product.persistence.ProductEntity;
+import com.yavlash.microservices.core.recommendation.persistence.RecommendationEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +20,11 @@ import org.springframework.data.mongodb.core.mapping.MongoPersistentProperty;
 
 @SpringBootApplication
 @ComponentScan("com.yavlash")
-public class ProductServiceApplication {
-	private static final Logger LOG = LoggerFactory.getLogger(ProductServiceApplication.class);
+public class RecommendationServiceApplication {
+	private static final Logger LOG = LoggerFactory.getLogger(RecommendationServiceApplication.class);
 
 	public static void main(String[] args) {
-		ConfigurableApplicationContext ctx = SpringApplication.run(ProductServiceApplication.class, args);
+		ConfigurableApplicationContext ctx = SpringApplication.run(RecommendationServiceApplication.class, args);
 		String mongodDbHost = ctx.getEnvironment().getProperty("spring.data.mongodb.host");
 		String mongodDbPort = ctx.getEnvironment().getProperty("spring.data.mongodb.port");
 		LOG.info("Connected to MongoDb: " + mongodDbHost + ":" + mongodDbPort);
@@ -37,7 +37,7 @@ public class ProductServiceApplication {
 	public void initIndicesAfterStartup() {
 		MappingContext<? extends MongoPersistentEntity<?>, MongoPersistentProperty> mappingContext = mongoTemplate.getConverter().getMappingContext();
 		IndexResolver resolver = new MongoPersistentEntityIndexResolver(mappingContext);
-		IndexOperations indexOps = mongoTemplate.indexOps(ProductEntity.class);
-		resolver.resolveIndexFor(ProductEntity.class).forEach(indexOps::ensureIndex);
+		IndexOperations indexOps = mongoTemplate.indexOps(RecommendationEntity.class);
+		resolver.resolveIndexFor(RecommendationEntity.class).forEach(indexOps::ensureIndex);
 	}
 }
