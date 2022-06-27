@@ -10,6 +10,7 @@ sourceCompatibility = '17'
 
 ext {
 	mapstructVersion = "1.4.2.Final"
+	springCloudVersion = "2020.0.3"
 }
 
 repositories {
@@ -40,6 +41,12 @@ dependencies {
 	testImplementation 'org.testcontainers:testcontainers'
 	testImplementation 'org.testcontainers:junit-jupiter'
 	testImplementation 'org.testcontainers:mysql'
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
 }
 
 tasks.named('test') {
