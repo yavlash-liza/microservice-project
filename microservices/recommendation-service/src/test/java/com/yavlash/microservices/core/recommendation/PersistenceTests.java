@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.dao.DuplicateKeyException;
 
 import java.util.List;
 
@@ -25,69 +26,84 @@ class PersistenceTests extends MongoDbTestBase {
 
     @BeforeEach
     void setupDb() {
-        repository.deleteAll();
+        repository.deleteAll().block();
         RecommendationEntity entity = new RecommendationEntity(1, 2, "a", 3, "c");
-        savedEntity = repository.save(entity);
-        assertEqualsRecommendation(entity, savedEntity);
+        savedEntity = repository.save(entity).block();
+        if (savedEntity != null) {
+            assertEqualsRecommendation(entity, savedEntity);
+        }
     }
 
     @Test
     void create() {
         //given && when
         RecommendationEntity newEntity = new RecommendationEntity(1, 3, "a", 3, "c");
-        repository.save(newEntity);
-        RecommendationEntity foundEntity = repository.findById(newEntity.getId()).get();
-        assertEqualsRecommendation(newEntity, foundEntity);
+        repository.save(newEntity).block();
+        RecommendationEntity foundEntity = repository.findById(newEntity.getId()).block();
 
         //then
-        assertEquals(2, repository.count());
+        if (foundEntity != null) {
+            assertEqualsRecommendation(newEntity, foundEntity);
+        }
+        assertEquals(2, (long) repository.count().block());
     }
 
     @Test
     void update() {
         //given && when
         savedEntity.setAuthor("a2");
-        repository.save(savedEntity);
-        RecommendationEntity foundEntity = repository.findById(savedEntity.getId()).get();
+        repository.save(savedEntity).block();
+        RecommendationEntity foundEntity = repository.findById(savedEntity.getId()).block();
 
         //then
-        assertEquals(1, (long) foundEntity.getVersion());
-        assertEquals("a2", foundEntity.getAuthor());
+        if (foundEntity != null) {
+            assertEquals(1, (long) foundEntity.getVersion());
+        }
+        if (foundEntity != null) {
+            assertEquals("a2", foundEntity.getAuthor());
+        }
     }
 
     @Test
     void delete() {
         //given && when
-        repository.delete(savedEntity);
-
-        //then
-        assertFalse(repository.existsById(savedEntity.getId()));
+        repository.delete(savedEntity).block();
+        assertFalse(repository.existsById(savedEntity.getId()).block());
     }
 
     @Test
     void getByProductId() {
-        //given && when
-        List<RecommendationEntity> entityList = repository.findByProductId(savedEntity.getProductId());
-
-        //then
+        // given && when && then
+        List<RecommendationEntity> entityList = repository.findByProductId(savedEntity.getProductId()).collectList().block();
         assertThat(entityList, hasSize(1));
         assertEqualsRecommendation(savedEntity, entityList.get(0));
     }
 
     @Test
-    void optimisticLockError() {
-        //given && when
-        RecommendationEntity entity1 = repository.findById(savedEntity.getId()).get();
-        RecommendationEntity entity2 = repository.findById(savedEntity.getId()).get();
-        entity1.setAuthor("a1");
-        repository.save(entity1);
-
-        //then
-        assertThrows(OptimisticLockingFailureException.class, () -> {
-            entity2.setAuthor("a2");
-            repository.save(entity2);
+    void duplicateError() {
+        // given && when && then
+        assertThrows(DuplicateKeyException.class, () -> {
+            RecommendationEntity entity = new RecommendationEntity(1, 2, "a", 3, "c");
+            repository.save(entity).block();
         });
-        RecommendationEntity updatedEntity = repository.findById(savedEntity.getId()).get();
+    }
+
+    @Test
+    void optimisticLockError() {
+        // given && when && then
+        RecommendationEntity entity1 = repository.findById(savedEntity.getId()).block();
+        RecommendationEntity entity2 = repository.findById(savedEntity.getId()).block();
+        if (entity1 != null) {
+            entity1.setAuthor("a1");
+            repository.save(entity1).block();
+        }
+        assertThrows(OptimisticLockingFailureException.class, () -> {
+            if (entity2 != null) {
+                entity2.setAuthor("a2");
+                repository.save(entity2).block();
+            }
+        });
+        RecommendationEntity updatedEntity = repository.findById(savedEntity.getId()).block();
         assertEquals(1, (int) updatedEntity.getVersion());
         assertEquals("a1", updatedEntity.getAuthor());
     }
