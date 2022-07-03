@@ -19,7 +19,6 @@ import org.springframework.data.mongodb.core.mapping.MongoPersistentEntity;
 import org.springframework.data.mongodb.core.mapping.MongoPersistentProperty;
 
 @SpringBootApplication
-@ComponentScan("com.yavlash")
 public class RecommendationServiceApplication {
     private static final Logger LOG = LoggerFactory.getLogger(RecommendationServiceApplication.class);
 
@@ -28,16 +27,5 @@ public class RecommendationServiceApplication {
         String mongodDbHost = ctx.getEnvironment().getProperty("spring.data.mongodb.host");
         String mongodDbPort = ctx.getEnvironment().getProperty("spring.data.mongodb.port");
         LOG.info("Connected to MongoDb: " + mongodDbHost + ":" + mongodDbPort);
-    }
-
-    @Autowired
-    ReactiveMongoOperations mongoTemplate;
-
-    @EventListener(ContextRefreshedEvent.class)
-    public void initIndicesAfterStartup() {
-        MappingContext<? extends MongoPersistentEntity<?>, MongoPersistentProperty> mappingContext = mongoTemplate.getConverter().getMappingContext();
-        IndexResolver resolver = new MongoPersistentEntityIndexResolver(mappingContext);
-        ReactiveIndexOperations indexOps = mongoTemplate.indexOps(RecommendationEntity.class);
-        resolver.resolveIndexFor(RecommendationEntity.class).forEach(e -> indexOps.ensureIndex(e).block());
     }
 }
