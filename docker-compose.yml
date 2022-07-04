@@ -109,7 +109,7 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
 
   rabbitmq:
-    image: rabbitmq:3.8.11-management
+    image: rabbitmq:latest
     deploy:
       resources:
         limits:
@@ -119,8 +119,8 @@ services:
           cpus: '0.25'
           memory: 128M
     ports:
-      - 5672:5672
-      - 15672:15672
+      - "5672:5672"
+      - "15672:15672"
     healthcheck:
       test: [ "CMD", "rabbitmqctl", "status" ]
       interval: 5s

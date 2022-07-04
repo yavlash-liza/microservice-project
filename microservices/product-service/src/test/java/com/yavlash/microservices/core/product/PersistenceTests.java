@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.OptimisticLockingFailureException;
 import reactor.test.StepVerifier;
 
@@ -72,15 +71,6 @@ class PersistenceTests extends MongoDbTestBase {
         StepVerifier.create(repository.findByProductId(savedEntity.getProductId()))
                 .expectNextMatches(foundEntity -> areProductEqual(savedEntity, foundEntity))
                 .verifyComplete();
-    }
-
-    @Test
-    void duplicateError() {
-        //given
-        ProductEntity entity = new ProductEntity(savedEntity.getProductId(), "n", 1);
-
-        //when && then
-        StepVerifier.create(repository.save(entity)).expectError(DuplicateKeyException.class).verify();
     }
 
     @Test
