@@ -5,6 +5,7 @@ springdoc:
   pathsToMatch: /**
 
 api:
+
   common:
     version: 1.0.0
     title: Sample API
@@ -27,6 +28,7 @@ api:
     unprocessableEntity.description: Unprocessable entity, input parameters caused the processing to fail. See response message for more information
 
   product-composite:
+
     get-composite-product:
       description: Returns a composite view of the specified product id
       notes: |
@@ -104,7 +106,7 @@ spring.rabbitmq:
 logging:
   level:
     root: INFO
-    com.yavlash: DEBUG
+    se.magnus: DEBUG
 
 management.endpoint.health.show-details: "ALWAYS"
 management.endpoints.web.exposure.include: "*"
