@@ -62,12 +62,10 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
             @Value("${app.review-service.host}") String reviewServiceHost,
             @Value("${app.review-service.port}") int  reviewServicePort
     ) {
-
         this.publishEventScheduler = publishEventScheduler;
         this.webClient = webClient.build();
         this.mapper = mapper;
         this.streamBridge = streamBridge;
-
         productServiceUrl        = "http://" + productServiceHost + ":" + productServicePort;
         recommendationServiceUrl = "http://" + recommendationServiceHost + ":" + recommendationServicePort;
         reviewServiceUrl         = "http://" + reviewServiceHost + ":" + reviewServicePort;
