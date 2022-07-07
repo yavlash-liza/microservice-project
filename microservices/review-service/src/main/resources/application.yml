@@ -40,13 +40,13 @@ spring.cloud.stream.kafka.binder:
 spring.rabbitmq:
   host: 127.0.0.1
   port: 5672
-  username: guest
-  password: guest
+#  username: guest
+#  password: guest
 
 logging:
   level:
     root: INFO
-    se.magnus: DEBUG
+    com.yavlash: DEBUG
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 

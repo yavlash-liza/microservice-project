@@ -3,7 +3,7 @@ package com.yavlash.microservices.core.review.services;
 import java.util.function.Consumer;
 
 import com.yavlash.api.core.review.Review;
-import com.yavlash.api.core.review.ReviewService;
+import com.yavlash.api.core.review.ReviewController;
 import com.yavlash.api.event.Event;
 import com.yavlash.api.exceptions.EventProcessingException;
 import org.slf4j.Logger;
@@ -15,10 +15,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class MessageProcessorConfig {
     private static final Logger LOG = LoggerFactory.getLogger(MessageProcessorConfig.class);
-    private final ReviewService reviewService;
+    private final ReviewController reviewService;
 
     @Autowired
-    public MessageProcessorConfig(ReviewService reviewService) {
+    public MessageProcessorConfig(ReviewController reviewService) {
         this.reviewService = reviewService;
     }
 

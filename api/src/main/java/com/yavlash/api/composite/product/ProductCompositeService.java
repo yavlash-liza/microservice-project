@@ -18,10 +18,10 @@ public interface ProductCompositeService {
 
     /**
      * Sample usage, see below.
-     *
+     * <p>
      * curl -X POST $HOST:$PORT/product-composite \
-     *   -H "Content-Type: application/json" --data \
-     *   '{"productId":123,"name":"product 123","weight":123}'
+     * -H "Content-Type: application/json" --data \
+     * '{"productId":123,"name":"product 123","weight":123}'
      *
      * @param body A JSON representation of the new composite product
      */
@@ -34,7 +34,7 @@ public interface ProductCompositeService {
     })
     @ResponseStatus(HttpStatus.ACCEPTED)
     @PostMapping(
-            value    = "/product-composite",
+            value = "/product-composite",
             consumes = "application/json")
     Mono<Void> createProduct(@RequestBody ProductAggregate body);
 

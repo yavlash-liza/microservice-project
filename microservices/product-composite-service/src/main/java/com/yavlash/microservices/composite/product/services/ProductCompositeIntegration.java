@@ -13,7 +13,7 @@ import com.yavlash.api.core.product.ProductService;
 import com.yavlash.api.core.recommendation.Recommendation;
 import com.yavlash.api.core.recommendation.RecommendationService;
 import com.yavlash.api.core.review.Review;
-import com.yavlash.api.core.review.ReviewService;
+import com.yavlash.api.core.review.ReviewController;
 import com.yavlash.api.event.Event;
 import com.yavlash.api.exceptions.InvalidInputException;
 import com.yavlash.api.exceptions.NotFoundException;
@@ -35,7 +35,7 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 
 @Component
-public class ProductCompositeIntegration implements ProductService, RecommendationService, ReviewService {
+public class ProductCompositeIntegration implements ProductService, RecommendationService, ReviewController {
     private static final Logger LOG = LoggerFactory.getLogger(ProductCompositeIntegration.class);
     private final WebClient webClient;
     private final ObjectMapper mapper;
