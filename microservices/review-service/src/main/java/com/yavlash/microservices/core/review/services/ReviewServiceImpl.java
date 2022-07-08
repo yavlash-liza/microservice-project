@@ -1,59 +1,49 @@
 package com.yavlash.microservices.core.review.services;
 
 import com.yavlash.api.core.review.Review;
-import com.yavlash.api.core.review.ReviewService;
 import com.yavlash.api.exceptions.InvalidInputException;
 import com.yavlash.microservices.core.review.persistence.ReviewEntity;
 import com.yavlash.microservices.core.review.persistence.ReviewRepository;
 import com.yavlash.util.http.ServiceUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@RestController
-public class ReviewServiceImpl implements ReviewService {
-    private static final Logger LOG = LoggerFactory.getLogger(ReviewServiceImpl.class);
-    private final ServiceUtil serviceUtil;
+@Service
+public class ReviewServiceImpl implements ReviewService{
     private final ReviewRepository repository;
     private final ReviewMapper mapper;
+    private final ServiceUtil serviceUtil;
 
     @Autowired
-    public ReviewServiceImpl(ReviewRepository repository, ReviewMapper mapper, ServiceUtil serviceUtil) {
+    public ReviewServiceImpl(ReviewMapper mapper, ReviewRepository repository, ServiceUtil serviceUtil) {
         this.repository = repository;
         this.mapper = mapper;
         this.serviceUtil = serviceUtil;
     }
 
-    @Override
-    public Review createReview(Review body) {
+    public Review createReview(Review review) {
         try {
-            ReviewEntity entity = mapper.apiToEntity(body);
+            ReviewEntity entity = mapper.apiToEntity(review);
             ReviewEntity newEntity = repository.save(entity);
-            LOG.debug("createReview: created a review entity: {}/{}", body.getProductId(), body.getReviewId());
+            LOG.debug("createReview: created a review entity: {}/{}", review.getProductId(), review.getReviewId());
             return mapper.entityToApi(newEntity);
-        } catch (DataIntegrityViolationException e) {
-            throw new InvalidInputException("Duplicate key, Product Id: " + body.getProductId() + ", Review Id:" + body.getReviewId());
+        } catch (DataIntegrityViolationException dive) {
+            throw new InvalidInputException("Duplicate key, Product Id: " + review.getProductId() + ", Review Id:" + review.getReviewId());
         }
     }
 
-    @Override
-    public List<Review> getReviews(int productId) {
-        if (productId < 1) {
-            throw new InvalidInputException("Invalid productId: " + productId);
-        }
+    public List<Review> findReviewsByProductId(int productId) {
         List<ReviewEntity> entityList = repository.findByProductId(productId);
         List<Review> list = mapper.entityListToApiList(entityList);
         list.forEach(e -> e.setServiceAddress(serviceUtil.getServiceAddress()));
-        LOG.debug("getReviews: response size: {}", list.size());
+        LOG.debug("Response size: {}", list.size());
         return list;
     }
 
-    @Override
-    public void deleteReviews(int productId) {
+    public void deleteReviewsByProductId(int productId) {
         LOG.debug("deleteReviews: tries to delete reviews for the product with productId: {}", productId);
         repository.deleteAll(repository.findByProductId(productId));
     }

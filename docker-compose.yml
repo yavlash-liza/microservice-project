@@ -57,6 +57,7 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
       - mongodb
+      - rabbitmq
 
   recommendation:
     build: microservices/recommendation-service
@@ -72,6 +73,7 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
       - mongodb
+      - rabbitmq
 
   review:
     build: microservices/review-service
@@ -87,6 +89,7 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
       - mysql
+      - rabbitmq
 
   product-composite:
     build: microservices/product-composite-service
@@ -98,7 +101,28 @@ services:
         reservations:
           cpus: '0.25'
           memory: 128M
+    depends_on:
+      - rabbitmq
     ports:
       - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+
+  rabbitmq:
+    image: rabbitmq:3.10-management
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status" ]
+      interval: 5s
+      timeout: 2s
+      retries: 60

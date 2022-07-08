@@ -15,19 +15,19 @@ class MapperTests {
     void mapperTests() {
         //given
         Product api = new Product(1, "n", 1, "sa");
+        ProductEntity entity = mapper.apiToEntity(api);
+        Product api2 = mapper.entityToApi(entity);
 
         //when && then
         assertNotNull(mapper);
-        ProductEntity entity = mapper.apiToEntity(api);
         assertEquals(api.getProductId(), entity.getProductId());
         assertEquals(api.getProductId(), entity.getProductId());
         assertEquals(api.getName(), entity.getName());
         assertEquals(api.getWeight(), entity.getWeight());
-        Product api2 = mapper.entityToApi(entity);
         assertEquals(api.getProductId(), api2.getProductId());
         assertEquals(api.getProductId(), api2.getProductId());
-        assertEquals(api.getName(),      api2.getName());
-        assertEquals(api.getWeight(),    api2.getWeight());
+        assertEquals(api.getName(), api2.getName());
+        assertEquals(api.getWeight(), api2.getWeight());
         assertNull(api2.getServiceAddress());
     }
 }
