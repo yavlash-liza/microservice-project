@@ -109,7 +109,7 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
 
   rabbitmq:
-    image: rabbitmq:latest
+    image: rabbitmq:3.10-management
     deploy:
       resources:
         limits:
