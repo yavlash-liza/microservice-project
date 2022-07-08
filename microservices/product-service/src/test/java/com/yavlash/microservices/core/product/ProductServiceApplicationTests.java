@@ -23,7 +23,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.util.function.Consumer;
 
-@SpringBootTest(webEnvironment = RANDOM_PORT)
+@SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"eureka.client.enabled=false"})
 class ProductServiceApplicationTests extends MongoDbTestBase {
     @Autowired
     private WebTestClient client;
