@@ -11,8 +11,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.health.CompositeReactiveHealthContributor;
 import org.springframework.boot.actuate.health.ReactiveHealthContributor;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.LinkedHashMap;
@@ -78,5 +80,11 @@ public class ApplicationConfiguration {
         registry.put("recommendation", () -> integration.getRecommendationHealth());
         registry.put("review", () -> integration.getReviewHealth());
         return CompositeReactiveHealthContributor.fromMap(registry);
+    }
+
+    @Bean
+    @LoadBalanced
+    public WebClient.Builder loadBalancedWebClientBuilder() {
+        return WebClient.builder();
     }
 }
