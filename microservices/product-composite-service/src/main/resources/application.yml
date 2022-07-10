@@ -67,6 +67,8 @@ server.error.include-message: always
 
 spring.application.name: product-composite
 
+spring.main.allow-circular-references: true
+
 app.eureka-server: localhost
 
 eureka:
