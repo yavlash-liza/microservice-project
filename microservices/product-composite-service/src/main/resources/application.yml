@@ -3,6 +3,9 @@ springdoc:
   api-docs.path: /openapi/v3/api-docs
   packagesToScan: com.yavlash.microservices.composite.product
   pathsToMatch: /**
+  cache.disabled: true
+
+server.forward-headers-strategy: framework
 
 api:
 
@@ -66,8 +69,6 @@ server.port: 7000
 server.error.include-message: always
 
 spring.application.name: product-composite
-
-spring.main.allow-circular-references: true
 
 app.eureka-server: localhost
 
