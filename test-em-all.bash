@@ -79,6 +79,7 @@ function waitForService() {
 }
 
 function testCompositeCreated() {
+
     # Expect that the Product Composite for productId $PROD_ID_REVS_RECS has been created with three recommendations and three reviews
     if ! assertCurl 200 "curl http://$HOST:$PORT/product-composite/$PROD_ID_REVS_RECS -s"
     then
@@ -182,6 +183,11 @@ then
 fi
 
 waitForService curl http://$HOST:$PORT/actuator/health
+
+# Verify access to Eureka and that all four microservices are registered in Eureka
+assertCurl 200 "curl -H "accept:application/json" $HOST:8761/eureka/apps -s"
+assertEqual 4 $(echo $RESPONSE | jq ".applications.application | length")
+
 setupTestdata
 
 waitForMessageProcessing
