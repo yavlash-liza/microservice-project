@@ -19,9 +19,9 @@ public class ProductCompositeServiceApplication {
     @Autowired
     public ProductCompositeServiceApplication(
             @Value("${app.threadPoolSize:10}")
-            Integer threadPoolSize,
+                    Integer threadPoolSize,
             @Value("${app.taskQueueSize:100}")
-            Integer taskQueueSize) {
+                    Integer taskQueueSize) {
         this.threadPoolSize = threadPoolSize;
         this.taskQueueSize = taskQueueSize;
     }

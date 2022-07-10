@@ -1,16 +1,53 @@
-version: '3.9'
+version: '2.9'
 
 services:
+  product:
+    build: microservices/product-service
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  recommendation:
+    build: microservices/recommendation-service
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  review:
+    build: microservices/review-service
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      mysql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  product-composite:
+    build: microservices/product-composite-service
+    mem_limit: 512m
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
   mongodb:
     image: mongo:latest
-    deploy:
-      resources:
-        limits:
-          cpus: '0.50'
-          memory: 512M
-        reservations:
-          cpus: '0.25'
-          memory: 128M
+    mem_limit: 512m
     ports:
       - "27017:27017"
     command: mongod
@@ -22,14 +59,7 @@ services:
 
   mysql:
     image: mysql:8.0.29
-    deploy:
-      resources:
-        limits:
-          cpus: '0.50'
-          memory: 512M
-        reservations:
-          cpus: '0.25'
-          memory: 128M
+    mem_limit: 512m
     ports:
       - "3306:3306"
     environment:
@@ -43,86 +73,20 @@ services:
       timeout: 2s
       retries: 60
 
-  product:
-    build: microservices/product-service
-    deploy:
-      resources:
-        limits:
-          cpus: '0.50'
-          memory: 512M
-        reservations:
-          cpus: '0.25'
-          memory: 128M
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-    depends_on:
-      - mongodb
-      - rabbitmq
-
-  recommendation:
-    build: microservices/recommendation-service
-    deploy:
-      resources:
-        limits:
-          cpus: '0.50'
-          memory: 512M
-        reservations:
-          cpus: '0.25'
-          memory: 128M
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-    depends_on:
-      - mongodb
-      - rabbitmq
-
-  review:
-    build: microservices/review-service
-    deploy:
-      resources:
-        limits:
-          cpus: '0.50'
-          memory: 512M
-        reservations:
-          cpus: '0.25'
-          memory: 128M
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-    depends_on:
-      - mysql
-      - rabbitmq
-
-  product-composite:
-    build: microservices/product-composite-service
-    deploy:
-      resources:
-        limits:
-          cpus: '0.50'
-          memory: 512M
-        reservations:
-          cpus: '0.25'
-          memory: 128M
-    depends_on:
-      - rabbitmq
-    ports:
-      - "8080:8080"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-
   rabbitmq:
     image: rabbitmq:3.10-management
-    deploy:
-      resources:
-        limits:
-          cpus: '0.50'
-          memory: 512M
-        reservations:
-          cpus: '0.25'
-          memory: 128M
+    mem_limit: 512m
     ports:
       - "5672:5672"
       - "15672:15672"
     healthcheck:
-      test: [ "CMD", "rabbitmqctl", "status" ]
+      test: ["CMD", "rabbitmqctl", "status"]
       interval: 5s
       timeout: 2s
       retries: 60
+
+  eureka:
+    build: spring-cloud/eureka-server
+    mem_limit: 512m
+    ports:
+      - "8761:8761"
