@@ -1,24 +1,16 @@
 package com.yavlash.microservices.composite.product.config;
 
-import com.yavlash.microservices.composite.product.services.HealthService;
 import io.swagger.v3.oas.models.ExternalDocumentation;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.actuate.health.CompositeReactiveHealthContributor;
-import org.springframework.boot.actuate.health.ReactiveHealthContributor;
-import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 @Configuration
 @ComponentScan("com.yavlash")
@@ -68,18 +60,6 @@ public class ApplicationConfiguration {
                 .externalDocs(new ExternalDocumentation()
                         .description(apiExternalDocDesc)
                         .url(apiExternalDocUrl));
-    }
-
-    @Autowired
-    HealthService healthService;
-
-    @Bean
-    ReactiveHealthContributor coreServices() {
-        final Map<String, ReactiveHealthIndicator> registry = new LinkedHashMap<>();
-        registry.put("product", () -> healthService.getProductHealth());
-        registry.put("recommendation", () -> healthService.getRecommendationHealth());
-        registry.put("review", () -> healthService.getReviewHealth());
-        return CompositeReactiveHealthContributor.fromMap(registry);
     }
 
     @Bean
