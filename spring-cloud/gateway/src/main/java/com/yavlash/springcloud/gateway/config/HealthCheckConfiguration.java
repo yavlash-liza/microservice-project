@@ -5,8 +5,7 @@ import static java.util.logging.Level.FINE;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.*;
 import org.springframework.context.annotation.Bean;
@@ -14,9 +13,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+@Slf4j
 @Configuration
 public class HealthCheckConfiguration {
-    private static final Logger LOG = LoggerFactory.getLogger(HealthCheckConfiguration.class);
     private final WebClient webClient;
 
     @Autowired
@@ -36,10 +35,10 @@ public class HealthCheckConfiguration {
 
     private Mono<Health> getHealth(String baseUrl) {
         String url = baseUrl + "/actuator/health";
-        LOG.debug("Setting up a call to the Health API on URL: {}", url);
+        log.debug("Setting up a call to the Health API on URL: {}", url);
         return webClient.get().uri(url).retrieve().bodyToMono(String.class)
                 .map(s -> new Health.Builder().up().build())
                 .onErrorResume(ex -> Mono.just(new Health.Builder().down(ex).build()))
-                .log(LOG.getName(), FINE);
+                .log(log.getName(), FINE);
     }
 }
