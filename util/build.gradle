@@ -12,7 +12,8 @@ repositories {
 }
 
 ext {
-	springBootVersion = '2.7.0'
+	springBootVersion = '2.7.1'
+	lombokVersion = "1.18.24"
 }
 
 dependencies {
@@ -20,6 +21,9 @@ dependencies {
 
 	implementation project(':api')
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	compileOnly "org.projectlombok:lombok:${lombokVersion}"
+	annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+	implementation 'org.slf4j:slf4j-api:1.7.36'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 

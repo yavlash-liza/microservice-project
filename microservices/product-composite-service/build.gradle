@@ -9,6 +9,7 @@ version = '1.0.0-SNAPSHOT'
 sourceCompatibility = '17'
 
 ext {
+	lombokVersion = "1.18.24"
 	springCloudVersion = "2021.0.3"
 }
 
@@ -29,6 +30,10 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-starter-stream-kafka'
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 	implementation 'org.springdoc:springdoc-openapi-webflux-ui:1.6.9'
+	implementation 'org.slf4j:slf4j-api:1.7.36'
+
+	compileOnly "org.projectlombok:lombok:${lombokVersion}"
+	annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.cloud:spring-cloud-stream::test-binder'
 	testImplementation 'io.projectreactor:reactor-test'
