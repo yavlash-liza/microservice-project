@@ -3,8 +3,7 @@ package com.yavlash.util.http;
 import com.yavlash.api.exceptions.BadRequestException;
 import com.yavlash.api.exceptions.InvalidInputException;
 import com.yavlash.api.exceptions.NotFoundException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,15 +13,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import static org.springframework.http.HttpStatus.*;
 
+@Slf4j
 @RestControllerAdvice
 class GlobalControllerExceptionHandler {
-    private static final Logger LOG = LoggerFactory.getLogger(GlobalControllerExceptionHandler.class);
-
     @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(BadRequestException.class)
     public @ResponseBody HttpErrorInfo handleBadRequestExceptions(
             ServerHttpRequest request, BadRequestException ex) {
-
         return createHttpErrorInfo(BAD_REQUEST, request, ex);
     }
 
@@ -45,7 +42,10 @@ class GlobalControllerExceptionHandler {
             HttpStatus httpStatus, ServerHttpRequest request, Exception e) {
         final String path = request.getPath().pathWithinApplication().value();
         final String message = e.getMessage();
-        LOG.debug("Returning HTTP status: {} for path: {}, message: {}", httpStatus, path, message);
-        return new HttpErrorInfo(httpStatus, path, message);
+        log.debug("Returning HTTP status: {} for path: {}, message: {}", httpStatus, path, message);
+        return new HttpErrorInfo()
+                .setHttpStatus(httpStatus)
+                .setPath(path)
+                .setMessage(message);
     }
 }
