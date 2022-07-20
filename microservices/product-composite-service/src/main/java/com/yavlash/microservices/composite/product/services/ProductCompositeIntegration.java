@@ -1,18 +1,17 @@
 package com.yavlash.microservices.composite.product.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yavlash.api.core.product.Product;
-import com.yavlash.api.core.product.ProductService;
-import com.yavlash.api.core.recommendation.Recommendation;
-import com.yavlash.api.core.recommendation.RecommendationService;
-import com.yavlash.api.core.review.Review;
-import com.yavlash.api.core.review.ReviewController;
+import com.yavlash.api.controller.ProductController;
+import com.yavlash.api.controller.RecommendationController;
+import com.yavlash.api.controller.ReviewController;
+import com.yavlash.api.dto.ProductDto;
+import com.yavlash.api.dto.RecommendationDto;
+import com.yavlash.api.dto.ReviewDto;
 import com.yavlash.api.event.Event;
 import com.yavlash.api.exceptions.InvalidInputException;
 import com.yavlash.api.exceptions.NotFoundException;
 import com.yavlash.util.http.HttpErrorInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cloud.stream.function.StreamBridge;
@@ -32,9 +31,9 @@ import static com.yavlash.api.event.Event.Type.DELETE;
 import static java.util.logging.Level.FINE;
 import static reactor.core.publisher.Flux.empty;
 
+@Slf4j
 @Component
-public class ProductCompositeIntegration implements ProductService, RecommendationService, ReviewController {
-    private static final Logger LOG = LoggerFactory.getLogger(ProductCompositeIntegration.class);
+public class ProductCompositeIntegration implements ProductController, RecommendationController, ReviewController {
     private static final String PRODUCT_SERVICE_URL = "http://product";
     private static final String RECOMMENDATION_SERVICE_URL = "http://recommendation";
     private static final String REVIEW_SERVICE_URL = "http://review";
@@ -57,7 +56,7 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
     }
 
     @Override
-    public Mono<Product> createProduct(Product body) {
+    public Mono<ProductDto> createProduct(ProductDto body) {
         return Mono.fromCallable(() -> {
             sendMessage("products-out-0", new Event(CREATE, body.getProductId(), body));
             return body;
@@ -65,10 +64,10 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
     }
 
     @Override
-    public Mono<Product> getProduct(int productId) {
+    public Mono<ProductDto> getProduct(int productId) {
         String url = PRODUCT_SERVICE_URL + "/product/" + productId;
-        LOG.debug("Will call the getProduct API on URL: {}", url);
-        return webClient.get().uri(url).retrieve().bodyToMono(Product.class).log(LOG.getName(), FINE).onErrorMap(WebClientResponseException.class, ex -> handleException(ex));
+        log.debug("Will call the getProduct API on URL: {}", url);
+        return webClient.get().uri(url).retrieve().bodyToMono(ProductDto.class).log(log.getName(), FINE).onErrorMap(WebClientResponseException.class, ex -> handleException(ex));
     }
 
     @Override
@@ -78,7 +77,7 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
     }
 
     @Override
-    public Mono<Recommendation> createRecommendation(Recommendation body) {
+    public Mono<RecommendationDto> createRecommendation(RecommendationDto body) {
         return Mono.fromCallable(() -> {
             sendMessage("recommendations-out-0", new Event(CREATE, body.getProductId(), body));
             return body;
@@ -86,10 +85,10 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
     }
 
     @Override
-    public Flux<Recommendation> getRecommendations(int productId) {
+    public Flux<RecommendationDto> getRecommendations(int productId) {
         String url = RECOMMENDATION_SERVICE_URL + "/recommendation?productId=" + productId;
-        LOG.debug("Will call the getRecommendations API on URL: {}", url);
-        return webClient.get().uri(url).retrieve().bodyToFlux(Recommendation.class).log(LOG.getName(), FINE).onErrorResume(error -> empty());
+        log.debug("Will call the getRecommendations API on URL: {}", url);
+        return webClient.get().uri(url).retrieve().bodyToFlux(RecommendationDto.class).log(log.getName(), FINE).onErrorResume(error -> empty());
     }
 
     @Override
@@ -99,7 +98,7 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
     }
 
     @Override
-    public Mono<Review> createReview(Review body) {
+    public Mono<ReviewDto> createReview(ReviewDto body) {
         return Mono.fromCallable(() -> {
             sendMessage("reviews-out-0", new Event(CREATE, body.getProductId(), body));
             return body;
@@ -107,10 +106,10 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
     }
 
     @Override
-    public Flux<Review> getReviews(int productId) {
+    public Flux<ReviewDto> getReviews(int productId) {
         String url = REVIEW_SERVICE_URL + "/review?productId=" + productId;
-        LOG.debug("Will call the getReviews API on URL: {}", url);
-        return webClient.get().uri(url).retrieve().bodyToFlux(Review.class).log(LOG.getName(), FINE).onErrorResume(error -> empty());
+        log.debug("Will call the getReviews API on URL: {}", url);
+        return webClient.get().uri(url).retrieve().bodyToFlux(ReviewDto.class).log(log.getName(), FINE).onErrorResume(error -> empty());
     }
 
     @Override
@@ -120,7 +119,7 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
     }
 
     private void sendMessage(String bindingName, Event event) {
-        LOG.debug("Sending a {} message to {}", event.getEventType(), bindingName);
+        log.debug("Sending a {} message to {}", event.getEventType(), bindingName);
         Message message = MessageBuilder.withPayload(event)
                 .setHeader("partitionKey", event.getKey())
                 .build();
@@ -129,7 +128,7 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 
     private Throwable handleException(Throwable e) {
         if (!(e instanceof WebClientResponseException)) {
-            LOG.warn("Got a unexpected error: {}, will rethrow it", e.toString());
+            log.warn("Got a unexpected error: {}, will rethrow it", e.toString());
             return e;
         }
         WebClientResponseException wcre = (WebClientResponseException)e;
@@ -139,8 +138,8 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
             case UNPROCESSABLE_ENTITY :
                 return new InvalidInputException(getErrorMessage(wcre));
             default:
-                LOG.warn("Got an unexpected HTTP error: {}, will rethrow it", wcre.getStatusCode());
-                LOG.warn("Error body: {}", wcre.getResponseBodyAsString());
+                log.warn("Got an unexpected HTTP error: {}, will rethrow it", wcre.getStatusCode());
+                log.warn("Error body: {}", wcre.getResponseBodyAsString());
                 return e;
         }
     }

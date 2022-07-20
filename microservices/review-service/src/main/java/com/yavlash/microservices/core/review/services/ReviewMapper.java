@@ -1,27 +1,22 @@
 package com.yavlash.microservices.core.review.services;
 
-import java.util.List;
-
-import com.yavlash.api.core.review.Review;
-import com.yavlash.microservices.core.review.persistence.ReviewEntity;
+import com.yavlash.api.dto.ReviewDto;
+import com.yavlash.microservices.core.review.entity.Review;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
+
+import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface ReviewMapper {
-    @Mappings({
-            @Mapping(target = "serviceAddress", ignore = true)
-    })
-    Review entityToApi(ReviewEntity entity);
+    @Mapping(target = "serviceAddress", ignore = true)
+    ReviewDto entityToApi(Review entity);
 
-    @Mappings({
-            @Mapping(target = "id", ignore = true),
-            @Mapping(target = "version", ignore = true)
-    })
-    ReviewEntity apiToEntity(Review api);
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "version", ignore = true)
+    Review apiToEntity(ReviewDto api);
 
-    List<Review> entityListToApiList(List<ReviewEntity> entity);
+    List<ReviewDto> entityListToApiList(List<Review> entity);
 
-    List<ReviewEntity> apiListToEntityList(List<Review> api);
+    List<Review> apiListToEntityList(List<ReviewDto> api);
 }

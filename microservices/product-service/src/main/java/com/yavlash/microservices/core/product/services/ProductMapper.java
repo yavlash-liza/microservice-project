@@ -1,21 +1,16 @@
 package com.yavlash.microservices.core.product.services;
 
-import com.yavlash.api.core.product.Product;
-import com.yavlash.microservices.core.product.persistence.ProductEntity;
+import com.yavlash.api.dto.ProductDto;
+import com.yavlash.microservices.core.product.entity.Product;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "spring")
 public interface ProductMapper {
-    @Mappings({
-            @Mapping(target = "serviceAddress", ignore = true)
-    })
-    Product entityToApi(ProductEntity entity);
+    @Mapping(target = "serviceAddress", ignore = true)
+    ProductDto entityToApi(Product entity);
 
-    @Mappings({
-            @Mapping(target = "id", ignore = true),
-            @Mapping(target = "version", ignore = true)
-    })
-    ProductEntity apiToEntity(Product api);
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "version", ignore = true)
+    Product apiToEntity(ProductDto api);
 }
