@@ -1,11 +1,10 @@
 package com.yavlash.microservices.core.review.controller;
 
-import com.yavlash.api.core.review.Review;
-import com.yavlash.api.core.review.ReviewController;
+import com.yavlash.api.controller.ReviewController;
+import com.yavlash.api.dto.ReviewDto;
 import com.yavlash.api.exceptions.InvalidInputException;
 import com.yavlash.microservices.core.review.services.ReviewService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,9 +14,9 @@ import reactor.core.scheduler.Scheduler;
 
 import static java.util.logging.Level.FINE;
 
+@Slf4j
 @RestController
 public class ReviewControllerImpl implements ReviewController {
-    private static final Logger LOG = LoggerFactory.getLogger(ReviewControllerImpl.class);
     private final ReviewService service;
     private final Scheduler jdbcScheduler;
 
@@ -28,7 +27,7 @@ public class ReviewControllerImpl implements ReviewController {
     }
 
     @Override
-    public Mono<Review> createReview(Review body) {
+    public Mono<ReviewDto> createReview(ReviewDto body) {
         if (body.getProductId() < 1) {
             throw new InvalidInputException("Invalid productId: " + body.getProductId());
         }
@@ -37,14 +36,14 @@ public class ReviewControllerImpl implements ReviewController {
     }
 
     @Override
-    public Flux<Review> getReviews(int productId) {
+    public Flux<ReviewDto> getReviews(int productId) {
         if (productId < 1) {
             throw new InvalidInputException("Invalid productId: " + productId);
         }
-        LOG.info("Will get reviews for product with id={}", productId);
+        log.info("Will get reviews for product with id={}", productId);
         return Mono.fromCallable(() -> service.findReviewsByProductId(productId))
                 .flatMapMany(Flux::fromIterable)
-                .log(LOG.getName(), FINE)
+                .log(log.getName(), FINE)
                 .subscribeOn(jdbcScheduler);
     }
 

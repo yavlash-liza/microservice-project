@@ -1,5 +1,6 @@
-package com.yavlash.api.composite.product;
+package com.yavlash.api.controller;
 
+import com.yavlash.api.dto.ProductListDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -14,17 +15,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import reactor.core.publisher.Mono;
 
 @Tag(name = "ProductComposite", description = "REST API for composite product information.")
-public interface ProductCompositeService {
+public interface ProductCompositeController {
 
-    /**
-     * Sample usage, see below.
-     * <p>
-     * curl -X POST $HOST:$PORT/product-composite \
-     * -H "Content-Type: application/json" --data \
-     * '{"productId":123,"name":"product 123","weight":123}'
-     *
-     * @param body A JSON representation of the new composite product
-     */
     @Operation(
             summary = "${api.product-composite.create-composite-product.description}",
             description = "${api.product-composite.create-composite-product.notes}")
@@ -36,14 +28,8 @@ public interface ProductCompositeService {
     @PostMapping(
             value = "/product-composite",
             consumes = "application/json")
-    Mono<Void> createProduct(@RequestBody ProductAggregate body);
+    Mono<Void> createProduct(@RequestBody ProductListDto body);
 
-    /**
-     * Sample usage: "curl $HOST:$PORT/product-composite/1".
-     *
-     * @param productId Id of the product
-     * @return the composite product info, if found, else null
-     */
     @Operation(
             summary = "${api.product-composite.get-composite-product.description}",
             description = "${api.product-composite.get-composite-product.notes}")
@@ -56,13 +42,8 @@ public interface ProductCompositeService {
     @GetMapping(
             value = "/product-composite/{productId}",
             produces = "application/json")
-    Mono<ProductAggregate> getProduct(@PathVariable int productId);
+    Mono<ProductListDto> getProduct(@PathVariable int productId);
 
-    /**
-     * Sample usage: "curl -X DELETE $HOST:$PORT/product-composite/1".
-     *
-     * @param productId Id of the product
-     */
     @Operation(
             summary = "${api.product-composite.delete-composite-product.description}",
             description = "${api.product-composite.delete-composite-product.notes}")
