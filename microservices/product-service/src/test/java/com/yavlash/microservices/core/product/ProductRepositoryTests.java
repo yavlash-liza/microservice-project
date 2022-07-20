@@ -1,7 +1,7 @@
 package com.yavlash.microservices.core.product;
 
-import com.yavlash.microservices.core.product.persistence.ProductEntity;
-import com.yavlash.microservices.core.product.persistence.ProductRepository;
+import com.yavlash.microservices.core.product.entity.Product;
+import com.yavlash.microservices.core.product.repository.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,16 +11,19 @@ import org.springframework.dao.OptimisticLockingFailureException;
 import reactor.test.StepVerifier;
 
 @DataMongoTest(excludeAutoConfiguration = EmbeddedMongoAutoConfiguration.class)
-class PersistenceTests extends MongoDbTestBase {
+class ProductRepositoryTests extends MongoDbTestBase {
     @Autowired
     private ProductRepository repository;
 
-    private ProductEntity savedEntity;
+    private Product savedEntity;
 
     @BeforeEach
     void setupDb() {
         StepVerifier.create(repository.deleteAll()).verifyComplete();
-        ProductEntity entity = new ProductEntity(1, "n", 1);
+        Product entity = new Product()
+                .setProductId(1)
+                .setName("n")
+                .setWeight(1);
         StepVerifier.create(repository.save(entity))
                 .expectNextMatches(createdEntity -> {
                     savedEntity = createdEntity;
@@ -32,7 +35,10 @@ class PersistenceTests extends MongoDbTestBase {
     @Test
     void create() {
         //given
-        ProductEntity newEntity = new ProductEntity(2, "n", 2);
+        Product newEntity = new Product()
+                .setProductId(2)
+                .setName("n")
+                .setWeight(2);
 
         //when && then
         StepVerifier.create(repository.save(newEntity))
@@ -76,8 +82,8 @@ class PersistenceTests extends MongoDbTestBase {
     @Test
     void optimisticLockError() {
         //given && when
-        ProductEntity entity1 = repository.findById(savedEntity.getId()).block();
-        ProductEntity entity2 = repository.findById(savedEntity.getId()).block();
+        Product entity1 = repository.findById(savedEntity.getId()).block();
+        Product entity2 = repository.findById(savedEntity.getId()).block();
         if (entity1 != null) {
             entity1.setName("n1");
             repository.save(entity1).block();
@@ -94,7 +100,7 @@ class PersistenceTests extends MongoDbTestBase {
                 .verifyComplete();
     }
 
-    private boolean areProductEqual(ProductEntity expectedEntity, ProductEntity actualEntity) {
+    private boolean areProductEqual(Product expectedEntity, Product actualEntity) {
         return (expectedEntity.getId().equals(actualEntity.getId()))
                 && (expectedEntity.getVersion().equals(actualEntity.getVersion()))
                 && (expectedEntity.getProductId() == actualEntity.getProductId())

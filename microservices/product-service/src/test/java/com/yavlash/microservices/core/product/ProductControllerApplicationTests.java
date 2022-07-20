@@ -1,12 +1,12 @@
 package com.yavlash.microservices.core.product;
 
+import com.yavlash.api.dto.ProductDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.yavlash.api.core.product.Product;
 import com.yavlash.api.event.Event;
 import com.yavlash.api.exceptions.InvalidInputException;
-import com.yavlash.microservices.core.product.persistence.ProductRepository;
+import com.yavlash.microservices.core.product.repository.ProductRepository;
 
 import static com.yavlash.api.event.Event.Type.CREATE;
 import static com.yavlash.api.event.Event.Type.DELETE;
@@ -24,7 +24,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import java.util.function.Consumer;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"eureka.client.enabled=false"})
-class ProductServiceApplicationTests extends MongoDbTestBase {
+class ProductControllerApplicationTests extends MongoDbTestBase {
     @Autowired
     private WebTestClient client;
 
@@ -33,7 +33,7 @@ class ProductServiceApplicationTests extends MongoDbTestBase {
 
     @Autowired
     @Qualifier("messageProcessor")
-    private Consumer<Event<Integer, Product>> messageProcessor;
+    private Consumer<Event<Integer, ProductDto>> messageProcessor;
 
     @BeforeEach
     void setupDb() {
@@ -129,13 +129,17 @@ class ProductServiceApplicationTests extends MongoDbTestBase {
     }
 
     private void sendCreateProductEvent(int productId) {
-        Product product = new Product(productId, "Name " + productId, productId, "SA");
-        Event<Integer, Product> event = new Event(CREATE, productId, product);
+        ProductDto productDto = new ProductDto()
+                .setProductId(productId)
+                .setName("Name " + productId)
+                .setWeight(productId)
+                .setServiceAddress("SA");
+        Event<Integer, ProductDto> event = new Event(CREATE, productId, productDto);
         messageProcessor.accept(event);
     }
 
     private void sendDeleteProductEvent(int productId) {
-        Event<Integer, Product> event = new Event(DELETE, productId, null);
+        Event<Integer, ProductDto> event = new Event(DELETE, productId, null);
         messageProcessor.accept(event);
     }
 }

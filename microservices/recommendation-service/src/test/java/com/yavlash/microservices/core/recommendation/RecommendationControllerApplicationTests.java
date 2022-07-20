@@ -1,9 +1,9 @@
 package com.yavlash.microservices.core.recommendation;
 
-import com.yavlash.api.core.recommendation.Recommendation;
+import com.yavlash.api.dto.RecommendationDto;
 import com.yavlash.api.event.Event;
 import com.yavlash.api.exceptions.InvalidInputException;
-import com.yavlash.microservices.core.recommendation.persistence.RecommendationRepository;
+import com.yavlash.microservices.core.recommendation.repository.RecommendationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"eureka.client.enabled=false"})
-class RecommendationServiceApplicationTests extends MongoDbTestBase {
+class RecommendationControllerApplicationTests extends MongoDbTestBase {
 
     @Autowired
     private WebTestClient client;
@@ -33,7 +33,7 @@ class RecommendationServiceApplicationTests extends MongoDbTestBase {
 
     @Autowired
     @Qualifier("messageProcessor")
-    private Consumer<Event<Integer, Recommendation>> messageProcessor;
+    private Consumer<Event<Integer, RecommendationDto>> messageProcessor;
 
     @BeforeEach
     void setupDb() {
@@ -136,13 +136,19 @@ class RecommendationServiceApplicationTests extends MongoDbTestBase {
     }
 
     private void sendCreateRecommendationEvent(int productId, int recommendationId) {
-        Recommendation recommendation = new Recommendation(productId, recommendationId, "Author " + recommendationId, recommendationId, "Content " + recommendationId, "SA");
-        Event<Integer, Recommendation> event = new Event(CREATE, productId, recommendation);
+        RecommendationDto recommendationDto = new RecommendationDto()
+                .setProductId(productId)
+                .setRecommendationId(recommendationId)
+                .setAuthor("Author " + recommendationId)
+                .setRate(recommendationId)
+                .setContent("Content " + recommendationId)
+                .setServiceAddress("SA");
+        Event<Integer, RecommendationDto> event = new Event(CREATE, productId, recommendationDto);
         messageProcessor.accept(event);
     }
 
     private void sendDeleteRecommendationEvent(int productId) {
-        Event<Integer, Recommendation> event = new Event(DELETE, productId, null);
+        Event<Integer, RecommendationDto> event = new Event(DELETE, productId, null);
         messageProcessor.accept(event);
     }
 }

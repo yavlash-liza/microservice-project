@@ -1,25 +1,11 @@
 package com.yavlash.microservices.composite.product;
 
-import static com.yavlash.api.event.Event.Type.CREATE;
-import static com.yavlash.api.event.Event.Type.DELETE;
-import static com.yavlash.microservices.composite.product.IsSameEvent.sameEventExceptCreatedAt;
-import static java.util.Collections.singletonList;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static org.springframework.http.HttpStatus.ACCEPTED;
-import static reactor.core.publisher.Mono.just;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import com.yavlash.api.composite.product.ProductAggregate;
-import com.yavlash.api.composite.product.RecommendationSummary;
-import com.yavlash.api.composite.product.ReviewSummary;
-import com.yavlash.api.core.product.Product;
-import com.yavlash.api.core.recommendation.Recommendation;
-import com.yavlash.api.core.review.Review;
+import com.yavlash.api.dto.ProductDto;
+import com.yavlash.api.dto.ProductListDto;
+import com.yavlash.api.dto.RecommendationDto;
+import com.yavlash.api.dto.RecommendationListDto;
+import com.yavlash.api.dto.ReviewDto;
+import com.yavlash.api.dto.ReviewListDto;
 import com.yavlash.api.event.Event;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,6 +19,20 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.Message;
 import org.springframework.test.web.reactive.server.WebTestClient;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.yavlash.api.event.Event.Type.CREATE;
+import static com.yavlash.api.event.Event.Type.DELETE;
+import static com.yavlash.microservices.composite.product.IsSameEvent.sameEventExceptCreatedAt;
+import static java.util.Collections.singletonList;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.http.HttpStatus.ACCEPTED;
+import static reactor.core.publisher.Mono.just;
 
 @SpringBootTest(
         webEnvironment = RANDOM_PORT, properties = {
@@ -57,18 +57,29 @@ class MessagingTests {
 
     @Test
     void createCompositeProduct1() {
-
-        ProductAggregate composite = new ProductAggregate(1, "name", 1, null, null, null);
+        //given
+        ProductListDto composite = new ProductListDto()
+                .setProductId(1)
+                .setName("name")
+                .setWeight(1)
+                .setRecommendations(null)
+                .setReviews(null)
+                .setServiceAddresses(null);
         postAndVerifyProduct(composite, ACCEPTED);
 
         final List<String> productMessages = getMessages("products");
         final List<String> recommendationMessages = getMessages("recommendations");
         final List<String> reviewMessages = getMessages("reviews");
 
+        //when && then
         assertEquals(1, productMessages.size());
 
-        Event<Integer, Product> expectedEvent =
-                new Event(CREATE, composite.getProductId(), new Product(composite.getProductId(), composite.getName(), composite.getWeight(), null));
+        Event<Integer, ProductDto> expectedEvent =
+                new Event(CREATE, composite.getProductId(), new ProductDto()
+                        .setProductId(composite.getProductId())
+                        .setName(composite.getName())
+                        .setWeight(composite.getWeight())
+                        .setServiceAddress(null));
         assertThat(productMessages.get(0), is(sameEventExceptCreatedAt(expectedEvent)));
 
         assertEquals(0, recommendationMessages.size());
@@ -77,33 +88,56 @@ class MessagingTests {
 
     @Test
     void createCompositeProduct2() {
-
-        ProductAggregate composite = new ProductAggregate(1, "name", 1,
-                singletonList(new RecommendationSummary(1, "a", 1, "c")),
-                singletonList(new ReviewSummary(1, "a", "s", "c")), null);
+        //given
+        RecommendationListDto recommendationListDto = new RecommendationListDto().setRecommendationId(1).setAuthor("a").setRate(1).setContent("c");
+        ReviewListDto reviewListDto = new ReviewListDto().setReviewId(1).setAuthor("a").setSubject("s").setContent("c");
+        ProductListDto composite = new ProductListDto()
+                .setProductId(1)
+                .setName("name")
+                .setWeight(1)
+                .setRecommendations(singletonList(recommendationListDto))
+                .setReviews(singletonList(reviewListDto))
+                .setServiceAddresses(null);
         postAndVerifyProduct(composite, ACCEPTED);
 
         final List<String> productMessages = getMessages("products");
         final List<String> recommendationMessages = getMessages("recommendations");
         final List<String> reviewMessages = getMessages("reviews");
 
+        //when && then
         assertEquals(1, productMessages.size());
 
-        Event<Integer, Product> expectedProductEvent =
-                new Event(CREATE, composite.getProductId(), new Product(composite.getProductId(), composite.getName(), composite.getWeight(), null));
+        Event<Integer, ProductDto> expectedProductEvent =
+                new Event(CREATE, composite.getProductId(), new ProductDto()
+                        .setProductId(composite.getProductId())
+                        .setName(composite.getName())
+                        .setWeight(composite.getWeight())
+                        .setServiceAddress(null));
         assertThat(productMessages.get(0), is(sameEventExceptCreatedAt(expectedProductEvent)));
         assertEquals(1, recommendationMessages.size());
 
-        RecommendationSummary rec = composite.getRecommendations().get(0);
-        Event<Integer, Product> expectedRecommendationEvent =
+        RecommendationListDto rec = composite.getRecommendations().get(0);
+        Event<Integer, ProductDto> expectedRecommendationEvent =
                 new Event(CREATE, composite.getProductId(),
-                        new Recommendation(composite.getProductId(), rec.getRecommendationId(), rec.getAuthor(), rec.getRate(), rec.getContent(), null));
+                        new RecommendationDto()
+                                .setProductId(composite.getProductId())
+                                .setRecommendationId(rec.getRecommendationId())
+                                .setAuthor(rec.getAuthor())
+                                .setRate(rec.getRate())
+                                .setContent(rec.getContent())
+                                .setServiceAddress(null));
         assertThat(recommendationMessages.get(0), is(sameEventExceptCreatedAt(expectedRecommendationEvent)));
         assertEquals(1, reviewMessages.size());
 
-        ReviewSummary rev = composite.getReviews().get(0);
-        Event<Integer, Product> expectedReviewEvent =
-                new Event(CREATE, composite.getProductId(), new Review(composite.getProductId(), rev.getReviewId(), rev.getAuthor(), rev.getSubject(), rev.getContent(), null));
+        ReviewListDto rev = composite.getReviews().get(0);
+        Event<Integer, ProductDto> expectedReviewEvent =
+                new Event(CREATE, composite.getProductId(), new ReviewDto()
+                        .setProductId(composite.getProductId())
+                        .setReviewId(rev.getReviewId())
+                        .setAuthor(rev.getAuthor())
+                        .setSubject(rev.getSubject())
+                        .setContent(rev.getContent())
+                        .setServiceAddress(null));
         assertThat(reviewMessages.get(0), is(sameEventExceptCreatedAt(expectedReviewEvent)));
     }
 
@@ -117,17 +151,17 @@ class MessagingTests {
 
         assertEquals(1, productMessages.size());
 
-        Event<Integer, Product> expectedProductEvent = new Event(DELETE, 1, null);
+        Event<Integer, ProductDto> expectedProductEvent = new Event(DELETE, 1, null);
         assertThat(productMessages.get(0), is(sameEventExceptCreatedAt(expectedProductEvent)));
 
         assertEquals(1, recommendationMessages.size());
 
-        Event<Integer, Product> expectedRecommendationEvent = new Event(DELETE, 1, null);
+        Event<Integer, ProductDto> expectedRecommendationEvent = new Event(DELETE, 1, null);
         assertThat(recommendationMessages.get(0), is(sameEventExceptCreatedAt(expectedRecommendationEvent)));
 
         assertEquals(1, reviewMessages.size());
 
-        Event<Integer, Product> expectedReviewEvent = new Event(DELETE, 1, null);
+        Event<Integer, ProductDto> expectedReviewEvent = new Event(DELETE, 1, null);
         assertThat(reviewMessages.get(0), is(sameEventExceptCreatedAt(expectedReviewEvent)));
     }
 
@@ -158,10 +192,10 @@ class MessagingTests {
         }
     }
 
-    private void postAndVerifyProduct(ProductAggregate compositeProduct, HttpStatus expectedStatus) {
+    private void postAndVerifyProduct(ProductListDto compositeProduct, HttpStatus expectedStatus) {
         client.post()
                 .uri("/product-composite")
-                .body(just(compositeProduct), ProductAggregate.class)
+                .body(just(compositeProduct), ProductListDto.class)
                 .exchange()
                 .expectStatus().isEqualTo(expectedStatus);
     }

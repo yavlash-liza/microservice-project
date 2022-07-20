@@ -1,8 +1,8 @@
 package com.yavlash.microservices.composite.product;
 
-import com.yavlash.api.core.product.Product;
-import com.yavlash.api.core.recommendation.Recommendation;
-import com.yavlash.api.core.review.Review;
+import com.yavlash.api.dto.ProductDto;
+import com.yavlash.api.dto.RecommendationDto;
+import com.yavlash.api.dto.ReviewDto;
 import com.yavlash.api.exceptions.InvalidInputException;
 import com.yavlash.api.exceptions.NotFoundException;
 import com.yavlash.microservices.composite.product.services.ProductCompositeIntegration;
@@ -23,7 +23,7 @@ import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"eureka.client.enabled=false"})
-class ProductCompositeServiceApplicationTests {
+class ProductCompositeControllerApplicationTests {
 	private static final int PRODUCT_ID_OK = 1;
 	private static final int PRODUCT_ID_NOT_FOUND = 2;
 	private static final int PRODUCT_ID_INVALID = 3;
@@ -36,12 +36,29 @@ class ProductCompositeServiceApplicationTests {
 
 	@BeforeEach
 	void setUp() {
+		String address = "mock-address";
 		when(compositeIntegration.getProduct(PRODUCT_ID_OK))
-				.thenReturn(Mono.just(new Product(PRODUCT_ID_OK, "name", 1, "mock-address")));
+				.thenReturn(Mono.just(new ProductDto()
+						.setProductId(PRODUCT_ID_OK)
+						.setName("name")
+						.setWeight(1)
+						.setServiceAddress(address)));
 		when(compositeIntegration.getRecommendations(PRODUCT_ID_OK))
-				.thenReturn(Flux.fromIterable(singletonList(new Recommendation(PRODUCT_ID_OK, 1, "author", 1, "content", "mock address"))));
+				.thenReturn(Flux.fromIterable(singletonList(new RecommendationDto()
+						.setProductId(PRODUCT_ID_OK)
+						.setRecommendationId(1)
+						.setAuthor("author")
+						.setRate(1)
+						.setContent("content")
+						.setServiceAddress(address))));
 		when(compositeIntegration.getReviews(PRODUCT_ID_OK))
-				.thenReturn(Flux.fromIterable(singletonList(new Review(PRODUCT_ID_OK, 1, "author", "subject", "content", "mock address"))));
+				.thenReturn(Flux.fromIterable(singletonList(new ReviewDto()
+						.setProductId(PRODUCT_ID_OK)
+						.setReviewId(1)
+						.setAuthor("author")
+						.setSubject("subject")
+						.setContent("content")
+						.setServiceAddress(address))));
 		when(compositeIntegration.getProduct(PRODUCT_ID_NOT_FOUND)).thenThrow(new NotFoundException("NOT FOUND: " + PRODUCT_ID_NOT_FOUND));
 		when(compositeIntegration.getProduct(PRODUCT_ID_INVALID)).thenThrow(new InvalidInputException("INVALID: " + PRODUCT_ID_INVALID));
 	}

@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.Collections;
 import java.util.List;
 
-import com.yavlash.api.core.review.Review;
-import com.yavlash.microservices.core.review.persistence.ReviewEntity;
+import com.yavlash.api.dto.ReviewDto;
+import com.yavlash.microservices.core.review.entity.Review;
 import com.yavlash.microservices.core.review.services.ReviewMapper;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -17,9 +17,15 @@ public class MapperTests {
     @Test
     void mapperTests() {
         //given && when
-        Review api = new Review(1, 2, "a", "s", "C", "adr");
-        ReviewEntity entity = mapper.apiToEntity(api);
-        Review api2 = mapper.entityToApi(entity);
+        ReviewDto api = new ReviewDto()
+                .setProductId(1)
+                .setReviewId(2)
+                .setAuthor("a")
+                .setSubject("s")
+                .setContent("C")
+                .setServiceAddress("adr");
+        Review entity = mapper.apiToEntity(api);
+        ReviewDto api2 = mapper.entityToApi(entity);
 
         //then
         assertNotNull(mapper);
@@ -39,12 +45,18 @@ public class MapperTests {
     @Test
     void mapperListTests() {
         //given && when
-        Review api = new Review(1, 2, "a", "s", "C", "adr");
-        List<Review> apiList = Collections.singletonList(api);
-        List<ReviewEntity> entityList = mapper.apiListToEntityList(apiList);
-        ReviewEntity entity = entityList.get(0);
-        List<Review> api2List = mapper.entityListToApiList(entityList);
-        Review api2 = api2List.get(0);
+        ReviewDto api = new ReviewDto()
+                .setProductId(1)
+                .setReviewId(2)
+                .setAuthor("a")
+                .setSubject("s")
+                .setContent("C")
+                .setServiceAddress("adr");
+        List<ReviewDto> apiList = Collections.singletonList(api);
+        List<Review> entityList = mapper.apiListToEntityList(apiList);
+        Review entity = entityList.get(0);
+        List<ReviewDto> api2List = mapper.entityListToApiList(entityList);
+        ReviewDto api2 = api2List.get(0);
 
         //then
         assertNotNull(mapper);

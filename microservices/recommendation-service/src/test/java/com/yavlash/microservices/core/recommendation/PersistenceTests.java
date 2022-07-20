@@ -1,7 +1,7 @@
 package com.yavlash.microservices.core.recommendation;
 
-import com.yavlash.microservices.core.recommendation.persistence.RecommendationEntity;
-import com.yavlash.microservices.core.recommendation.persistence.RecommendationRepository;
+import com.yavlash.microservices.core.recommendation.entity.Recommendation;
+import com.yavlash.microservices.core.recommendation.repository.RecommendationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +21,17 @@ class PersistenceTests extends MongoDbTestBase {
     @Autowired
     private RecommendationRepository repository;
 
-    private RecommendationEntity savedEntity;
+    private Recommendation savedEntity;
 
     @BeforeEach
     void setupDb() {
         repository.deleteAll().block();
-        RecommendationEntity entity = new RecommendationEntity(1, 2, "a", 3, "c");
+        Recommendation entity = new Recommendation()
+                .setProductId(1)
+                .setRecommendationId(2)
+                .setAuthor("a")
+                .setContent("c")
+                .setRating(3);
         savedEntity = repository.save(entity).block();
         assertEqualsRecommendation(entity, savedEntity);
     }
@@ -34,9 +39,14 @@ class PersistenceTests extends MongoDbTestBase {
     @Test
     void create() {
         //given && when
-        RecommendationEntity newEntity = new RecommendationEntity(1, 3, "a", 3, "c");
+        Recommendation newEntity = new Recommendation()
+                .setProductId(1)
+                .setRecommendationId(3)
+                .setAuthor("a")
+                .setContent("c")
+                .setRating(3);
         repository.save(newEntity).block();
-        RecommendationEntity foundEntity = repository.findById(newEntity.getId()).block();
+        Recommendation foundEntity = repository.findById(newEntity.getId()).block();
 
         //then
         if (foundEntity != null) {
@@ -50,7 +60,7 @@ class PersistenceTests extends MongoDbTestBase {
         //given && when
         savedEntity.setAuthor("a2");
         repository.save(savedEntity).block();
-        RecommendationEntity foundEntity = repository.findById(savedEntity.getId()).block();
+        Recommendation foundEntity = repository.findById(savedEntity.getId()).block();
 
         //then
         if (foundEntity != null) {
@@ -73,7 +83,7 @@ class PersistenceTests extends MongoDbTestBase {
     @Test
     void getByProductId() {
         // given && when
-        List<RecommendationEntity> entityList = repository.findByProductId(savedEntity.getProductId()).collectList().block();
+        List<Recommendation> entityList = repository.findByProductId(savedEntity.getProductId()).collectList().block();
 
         //then
         assertThat(entityList, hasSize(1));
@@ -83,13 +93,13 @@ class PersistenceTests extends MongoDbTestBase {
     @Test
     void optimisticLockError() {
         // given && when
-        RecommendationEntity entity1 = repository.findById(savedEntity.getId()).block();
-        RecommendationEntity entity2 = repository.findById(savedEntity.getId()).block();
+        Recommendation entity1 = repository.findById(savedEntity.getId()).block();
+        Recommendation entity2 = repository.findById(savedEntity.getId()).block();
         if (entity1 != null) {
             entity1.setAuthor("a1");
             repository.save(entity1).block();
         }
-        RecommendationEntity updatedEntity = repository.findById(savedEntity.getId()).block();
+        Recommendation updatedEntity = repository.findById(savedEntity.getId()).block();
 
         //then
         assertThrows(OptimisticLockingFailureException.class, () -> {
@@ -102,7 +112,7 @@ class PersistenceTests extends MongoDbTestBase {
         assertEquals("a1", updatedEntity.getAuthor());
     }
 
-    private void assertEqualsRecommendation(RecommendationEntity expectedEntity, RecommendationEntity actualEntity) {
+    private void assertEqualsRecommendation(Recommendation expectedEntity, Recommendation actualEntity) {
         assertEquals(expectedEntity.getId(), actualEntity.getId());
         assertEquals(expectedEntity.getVersion(), actualEntity.getVersion());
         assertEquals(expectedEntity.getProductId(), actualEntity.getProductId());

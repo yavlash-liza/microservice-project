@@ -1,9 +1,9 @@
 package com.yavlash.microservices.core.review;
 
-import com.yavlash.api.core.review.Review;
+import com.yavlash.api.dto.ReviewDto;
 import com.yavlash.api.event.Event;
 import com.yavlash.api.exceptions.InvalidInputException;
-import com.yavlash.microservices.core.review.persistence.ReviewRepository;
+import com.yavlash.microservices.core.review.repository.ReviewRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,7 @@ class ReviewServiceApplicationTests extends MySqlTestBase {
 
     @Autowired
     @Qualifier("messageProcessor")
-    private Consumer<Event<Integer, Review>> messageProcessor;
+    private Consumer<Event<Integer, ReviewDto>> messageProcessor;
 
     @BeforeEach
     void setupDb() {
@@ -140,13 +140,19 @@ class ReviewServiceApplicationTests extends MySqlTestBase {
     }
 
     private void sendCreateReviewEvent(int productId, int reviewId) {
-        Review review = new Review(productId, reviewId, "Author " + reviewId, "Subject " + reviewId, "Content " + reviewId, "SA");
-        Event<Integer, Review> event = new Event(CREATE, productId, review);
+        ReviewDto reviewDto = new ReviewDto()
+                .setProductId(productId)
+                .setReviewId(reviewId)
+                .setAuthor("Author " + reviewId)
+                .setSubject("Subject " + reviewId)
+                .setContent("Content " + reviewId)
+                .setServiceAddress("SA");
+        Event<Integer, ReviewDto> event = new Event(CREATE, productId, reviewDto);
         messageProcessor.accept(event);
     }
 
     private void sendDeleteReviewEvent(int productId) {
-        Event<Integer, Review> event = new Event(DELETE, productId, null);
+        Event<Integer, ReviewDto> event = new Event(DELETE, productId, null);
         messageProcessor.accept(event);
     }
 }

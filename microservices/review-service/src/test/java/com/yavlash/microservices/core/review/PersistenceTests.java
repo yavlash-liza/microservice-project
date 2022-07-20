@@ -1,7 +1,7 @@
 package com.yavlash.microservices.core.review;
 
-import com.yavlash.microservices.core.review.persistence.ReviewEntity;
-import com.yavlash.microservices.core.review.persistence.ReviewRepository;
+import com.yavlash.microservices.core.review.entity.Review;
+import com.yavlash.microservices.core.review.repository.ReviewRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +26,17 @@ class PersistenceTests extends MySqlTestBase {
     @Autowired
     private ReviewRepository repository;
 
-    private ReviewEntity savedEntity;
+    private Review savedEntity;
 
     @BeforeEach
     void setupDb() {
         repository.deleteAll();
-        ReviewEntity entity = new ReviewEntity(1, 2, "a", "s", "c");
+        Review entity = new Review()
+                .setReviewId(1)
+                .setProductId(2)
+                .setContent("c")
+                .setAuthor("a")
+                .setSubject("s");
         savedEntity = repository.save(entity);
         assertEqualsReview(entity, savedEntity);
     }
@@ -39,9 +44,14 @@ class PersistenceTests extends MySqlTestBase {
     @Test
     void create() {
         //given && when
-        ReviewEntity newEntity = new ReviewEntity(1, 3, "a", "s", "c");
+        Review newEntity = new Review()
+                .setReviewId(1)
+                .setProductId(3)
+                .setContent("c")
+                .setAuthor("a")
+                .setSubject("s");
         repository.save(newEntity);
-        ReviewEntity foundEntity = repository.findById(newEntity.getId()).get();
+        Review foundEntity = repository.findById(newEntity.getId()).get();
 
         //then
         assertEqualsReview(newEntity, foundEntity);
@@ -53,7 +63,7 @@ class PersistenceTests extends MySqlTestBase {
         //given && when
         savedEntity.setAuthor("a2");
         repository.save(savedEntity);
-        ReviewEntity foundEntity = repository.findById(savedEntity.getId()).get();
+        Review foundEntity = repository.findById(savedEntity.getId()).get();
 
         //then
         assertEquals(1, (long) foundEntity.getVersion());
@@ -72,7 +82,7 @@ class PersistenceTests extends MySqlTestBase {
     @Test
     void getByProductId() {
         //given && when
-        List<ReviewEntity> entityList = repository.findByProductId(savedEntity.getProductId());
+        List<Review> entityList = repository.findByProductId(savedEntity.getProductId());
 
         //then
         assertThat(entityList, hasSize(1));
@@ -82,7 +92,12 @@ class PersistenceTests extends MySqlTestBase {
     @Test
     void duplicateError() {
         assertThrows(DataIntegrityViolationException.class, () -> {
-            ReviewEntity entity = new ReviewEntity(1, 2, "a", "s", "c");
+            Review entity = new Review()
+                    .setReviewId(1)
+                    .setProductId(2)
+                    .setContent("c")
+                    .setAuthor("a")
+                    .setSubject("s");
             repository.save(entity);
         });
     }
@@ -90,8 +105,8 @@ class PersistenceTests extends MySqlTestBase {
     @Test
     void optimisticLockError() {
         // given && then
-        ReviewEntity entity1 = repository.findById(savedEntity.getId()).get();
-        ReviewEntity entity2 = repository.findById(savedEntity.getId()).get();
+        Review entity1 = repository.findById(savedEntity.getId()).get();
+        Review entity2 = repository.findById(savedEntity.getId()).get();
         entity1.setAuthor("a1");
         repository.save(entity1);
 
@@ -100,12 +115,12 @@ class PersistenceTests extends MySqlTestBase {
             entity2.setAuthor("a2");
             repository.save(entity2);
         });
-        ReviewEntity updatedEntity = repository.findById(savedEntity.getId()).get();
+        Review updatedEntity = repository.findById(savedEntity.getId()).get();
         assertEquals(1, (int) updatedEntity.getVersion());
         assertEquals("a1", updatedEntity.getAuthor());
     }
 
-    private void assertEqualsReview(ReviewEntity expectedEntity, ReviewEntity actualEntity) {
+    private void assertEqualsReview(Review expectedEntity, Review actualEntity) {
         assertEquals(expectedEntity.getId(), actualEntity.getId());
         assertEquals(expectedEntity.getVersion(), actualEntity.getVersion());
         assertEquals(expectedEntity.getProductId(), actualEntity.getProductId());

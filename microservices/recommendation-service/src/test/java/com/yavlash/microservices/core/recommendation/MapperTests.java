@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.Collections;
 import java.util.List;
 
-import com.yavlash.api.core.recommendation.Recommendation;
-import com.yavlash.microservices.core.recommendation.persistence.RecommendationEntity;
+import com.yavlash.api.dto.RecommendationDto;
+import com.yavlash.microservices.core.recommendation.entity.Recommendation;
 import com.yavlash.microservices.core.recommendation.services.RecommendationMapper;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -17,9 +17,15 @@ public class MapperTests {
     @Test
     void mapperTests() {
         //given && when
-        Recommendation api = new Recommendation(1, 2, "a", 4, "C", "adr");
-        RecommendationEntity entity = mapper.apiToEntity(api);
-        Recommendation api2 = mapper.entityToApi(entity);
+        RecommendationDto api = new RecommendationDto()
+                .setProductId(1)
+                .setRecommendationId(2)
+                .setAuthor("a")
+                .setContent("C")
+                .setRate(4)
+                .setServiceAddress("adr");
+        Recommendation entity = mapper.apiToEntity(api);
+        RecommendationDto api2 = mapper.entityToApi(entity);
 
         //then
         assertNotNull(mapper);
@@ -39,12 +45,18 @@ public class MapperTests {
     @Test
     void mapperListTests() {
         //given && when
-        Recommendation api = new Recommendation(1, 2, "a", 4, "C", "adr");
-        List<Recommendation> apiList = Collections.singletonList(api);
-        List<RecommendationEntity> entityList = mapper.apiListToEntityList(apiList);
-        RecommendationEntity entity = entityList.get(0);
-        List<Recommendation> api2List = mapper.entityListToApiList(entityList);
-        Recommendation api2 = api2List.get(0);
+        RecommendationDto api = new RecommendationDto()
+                .setProductId(1)
+                .setRecommendationId(2)
+                .setAuthor("a")
+                .setContent("C")
+                .setRate(4)
+                .setServiceAddress("adr");
+        List<RecommendationDto> apiList = Collections.singletonList(api);
+        List<Recommendation> entityList = mapper.apiListToEntityList(apiList);
+        Recommendation entity = entityList.get(0);
+        List<RecommendationDto> api2List = mapper.entityListToApiList(entityList);
+        RecommendationDto api2 = api2List.get(0);
 
         //then
         assertNotNull(mapper);
