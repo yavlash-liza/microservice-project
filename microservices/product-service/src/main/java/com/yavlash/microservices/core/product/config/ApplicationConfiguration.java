@@ -1,6 +1,6 @@
 package com.yavlash.microservices.core.product.config;
 
-import com.yavlash.microservices.core.product.persistence.ProductEntity;
+import com.yavlash.microservices.core.product.entity.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -24,7 +24,7 @@ public class ApplicationConfiguration {
     public void initIndicesAfterStartup() {
         MappingContext<? extends MongoPersistentEntity<?>, MongoPersistentProperty> mappingContext = mongoTemplate.getConverter().getMappingContext();
         IndexResolver resolver = new MongoPersistentEntityIndexResolver(mappingContext);
-        ReactiveIndexOperations indexOps = mongoTemplate.indexOps(ProductEntity.class);
-        resolver.resolveIndexFor(ProductEntity.class).forEach(e -> indexOps.ensureIndex(e).block());
+        ReactiveIndexOperations indexOps = mongoTemplate.indexOps(Product.class);
+        resolver.resolveIndexFor(Product.class).forEach(e -> indexOps.ensureIndex(e).block());
     }
 }

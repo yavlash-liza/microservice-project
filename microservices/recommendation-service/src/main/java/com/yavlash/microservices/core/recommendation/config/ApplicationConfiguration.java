@@ -1,6 +1,6 @@
 package com.yavlash.microservices.core.recommendation.config;
 
-import com.yavlash.microservices.core.recommendation.persistence.RecommendationEntity;
+import com.yavlash.microservices.core.recommendation.entity.Recommendation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -24,7 +24,7 @@ public class ApplicationConfiguration {
     public void initIndicesAfterStartup() {
         MappingContext<? extends MongoPersistentEntity<?>, MongoPersistentProperty> mappingContext = mongoTemplate.getConverter().getMappingContext();
         IndexResolver resolver = new MongoPersistentEntityIndexResolver(mappingContext);
-        ReactiveIndexOperations indexOps = mongoTemplate.indexOps(RecommendationEntity.class);
-        resolver.resolveIndexFor(RecommendationEntity.class).forEach(e -> indexOps.ensureIndex(e).block());
+        ReactiveIndexOperations indexOps = mongoTemplate.indexOps(Recommendation.class);
+        resolver.resolveIndexFor(Recommendation.class).forEach(e -> indexOps.ensureIndex(e).block());
     }
 }
