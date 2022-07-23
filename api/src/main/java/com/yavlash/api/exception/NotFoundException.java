@@ -1,4 +1,4 @@
-package com.yavlash.api.exceptions;
+package com.yavlash.api.exception;
 
 public class NotFoundException extends RuntimeException{
     public NotFoundException() {

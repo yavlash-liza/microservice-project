@@ -1,8 +1,8 @@
 package com.yavlash.util.http;
 
-import com.yavlash.api.exceptions.BadRequestException;
-import com.yavlash.api.exceptions.InvalidInputException;
-import com.yavlash.api.exceptions.NotFoundException;
+import com.yavlash.api.exception.BadRequestException;
+import com.yavlash.api.exception.InvalidInputException;
+import com.yavlash.api.exception.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;

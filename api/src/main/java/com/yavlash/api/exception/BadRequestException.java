@@ -1,4 +1,4 @@
-package com.yavlash.api.exceptions;
+package com.yavlash.api.exception;
 
 public class BadRequestException extends RuntimeException {
     public BadRequestException() {
