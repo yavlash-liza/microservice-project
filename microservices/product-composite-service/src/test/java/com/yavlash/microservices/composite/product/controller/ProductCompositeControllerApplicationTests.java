@@ -1,10 +1,10 @@
-package com.yavlash.microservices.composite.product;
+package com.yavlash.microservices.composite.product.controller;
 
 import com.yavlash.api.dto.ProductDto;
 import com.yavlash.api.dto.RecommendationDto;
 import com.yavlash.api.dto.ReviewDto;
-import com.yavlash.api.exceptions.InvalidInputException;
-import com.yavlash.api.exceptions.NotFoundException;
+import com.yavlash.api.exception.InvalidInputException;
+import com.yavlash.api.exception.NotFoundException;
 import com.yavlash.microservices.composite.product.services.ProductCompositeIntegration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,8 +1,9 @@
-package com.yavlash.microservices.core.recommendation;
+package com.yavlash.microservices.core.recommendation.controller;
 
 import com.yavlash.api.dto.RecommendationDto;
 import com.yavlash.api.event.Event;
-import com.yavlash.api.exceptions.InvalidInputException;
+import com.yavlash.api.exception.InvalidInputException;
+import com.yavlash.microservices.core.recommendation.repository.MongoDbTestBase;
 import com.yavlash.microservices.core.recommendation.repository.RecommendationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,7 +24,7 @@ import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"eureka.client.enabled=false"})
-class RecommendationControllerApplicationTests extends MongoDbTestBase {
+class RecommendationControllerApplicationTest extends MongoDbTestBase {
 
     @Autowired
     private WebTestClient client;

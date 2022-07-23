@@ -1,4 +1,4 @@
-package com.yavlash.microservices.core.product;
+package com.yavlash.microservices.core.product.services;
 
 import com.yavlash.api.dto.ProductDto;
 import com.yavlash.microservices.core.product.entity.Product;
@@ -8,7 +8,7 @@ import org.mapstruct.factory.Mappers;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class MapperTests {
+class ProductMapperTest {
     private final ProductMapper mapper = Mappers.getMapper(ProductMapper.class);
 
     @Test
@@ -19,8 +19,8 @@ class MapperTests {
                 .setName("n")
                 .setWeight(1)
                 .setServiceAddress("sa");
-        Product entity = mapper.apiToEntity(api);
-        ProductDto api2 = mapper.entityToApi(entity);
+        Product entity = mapper.fromDto(api);
+        ProductDto api2 = mapper.toDto(entity);
 
         //when && then
         assertNotNull(mapper);

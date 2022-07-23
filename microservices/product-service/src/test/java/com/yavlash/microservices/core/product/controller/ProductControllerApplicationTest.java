@@ -1,11 +1,12 @@
-package com.yavlash.microservices.core.product;
+package com.yavlash.microservices.core.product.controller;
 
 import com.yavlash.api.dto.ProductDto;
+import com.yavlash.microservices.core.product.repository.MongoDbTestBase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.yavlash.api.event.Event;
-import com.yavlash.api.exceptions.InvalidInputException;
+import com.yavlash.api.exception.InvalidInputException;
 import com.yavlash.microservices.core.product.repository.ProductRepository;
 
 import static com.yavlash.api.event.Event.Type.CREATE;
@@ -24,7 +25,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import java.util.function.Consumer;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"eureka.client.enabled=false"})
-class ProductControllerApplicationTests extends MongoDbTestBase {
+class ProductControllerApplicationTest extends MongoDbTestBase {
     @Autowired
     private WebTestClient client;
 

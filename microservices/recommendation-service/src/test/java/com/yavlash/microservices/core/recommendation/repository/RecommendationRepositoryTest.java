@@ -1,7 +1,6 @@
-package com.yavlash.microservices.core.recommendation;
+package com.yavlash.microservices.core.recommendation.repository;
 
 import com.yavlash.microservices.core.recommendation.entity.Recommendation;
-import com.yavlash.microservices.core.recommendation.repository.RecommendationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataMongoTest(excludeAutoConfiguration = EmbeddedMongoAutoConfiguration.class)
-class PersistenceTests extends MongoDbTestBase {
+class RecommendationRepositoryTest extends MongoDbTestBase {
 
     @Autowired
     private RecommendationRepository repository;

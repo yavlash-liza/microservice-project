@@ -1,6 +1,7 @@
-package com.yavlash.microservices.core.product;
+package com.yavlash.microservices.core.product.repository;
 
 import com.yavlash.microservices.core.product.entity.Product;
+import com.yavlash.microservices.core.product.repository.MongoDbTestBase;
 import com.yavlash.microservices.core.product.repository.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,7 +12,7 @@ import org.springframework.dao.OptimisticLockingFailureException;
 import reactor.test.StepVerifier;
 
 @DataMongoTest(excludeAutoConfiguration = EmbeddedMongoAutoConfiguration.class)
-class ProductRepositoryTests extends MongoDbTestBase {
+class ProductRepositoryTest extends MongoDbTestBase {
     @Autowired
     private ProductRepository repository;
 

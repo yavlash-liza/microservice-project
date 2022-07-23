@@ -1,43 +1,43 @@
-package com.yavlash.microservices.core.review;
+package com.yavlash.microservices.core.recommendation.services;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collections;
 import java.util.List;
 
-import com.yavlash.api.dto.ReviewDto;
-import com.yavlash.microservices.core.review.entity.Review;
-import com.yavlash.microservices.core.review.services.ReviewMapper;
+import com.yavlash.api.dto.RecommendationDto;
+import com.yavlash.microservices.core.recommendation.entity.Recommendation;
+import com.yavlash.microservices.core.recommendation.services.RecommendationMapper;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
-public class MapperTests {
-    private ReviewMapper mapper = Mappers.getMapper(ReviewMapper.class);
+public class RecommendationMapperTest {
+    private final RecommendationMapper mapper = Mappers.getMapper(RecommendationMapper.class);
 
     @Test
     void mapperTests() {
         //given && when
-        ReviewDto api = new ReviewDto()
+        RecommendationDto api = new RecommendationDto()
                 .setProductId(1)
-                .setReviewId(2)
+                .setRecommendationId(2)
                 .setAuthor("a")
-                .setSubject("s")
                 .setContent("C")
+                .setRate(4)
                 .setServiceAddress("adr");
-        Review entity = mapper.apiToEntity(api);
-        ReviewDto api2 = mapper.entityToApi(entity);
+        Recommendation entity = mapper.fromDto(api);
+        RecommendationDto api2 = mapper.toDto(entity);
 
         //then
         assertNotNull(mapper);
         assertEquals(api.getProductId(), entity.getProductId());
-        assertEquals(api.getReviewId(), entity.getReviewId());
+        assertEquals(api.getRecommendationId(), entity.getRecommendationId());
         assertEquals(api.getAuthor(), entity.getAuthor());
-        assertEquals(api.getSubject(), entity.getSubject());
+        assertEquals(api.getRate(), entity.getRating());
         assertEquals(api.getContent(), entity.getContent());
         assertEquals(api.getProductId(), api2.getProductId());
-        assertEquals(api.getReviewId(), api2.getReviewId());
+        assertEquals(api.getRecommendationId(), api2.getRecommendationId());
         assertEquals(api.getAuthor(), api2.getAuthor());
-        assertEquals(api.getSubject(), api2.getSubject());
+        assertEquals(api.getRate(), api2.getRate());
         assertEquals(api.getContent(), api2.getContent());
         assertNull(api2.getServiceAddress());
     }
@@ -45,32 +45,32 @@ public class MapperTests {
     @Test
     void mapperListTests() {
         //given && when
-        ReviewDto api = new ReviewDto()
+        RecommendationDto api = new RecommendationDto()
                 .setProductId(1)
-                .setReviewId(2)
+                .setRecommendationId(2)
                 .setAuthor("a")
-                .setSubject("s")
                 .setContent("C")
+                .setRate(4)
                 .setServiceAddress("adr");
-        List<ReviewDto> apiList = Collections.singletonList(api);
-        List<Review> entityList = mapper.apiListToEntityList(apiList);
-        Review entity = entityList.get(0);
-        List<ReviewDto> api2List = mapper.entityListToApiList(entityList);
-        ReviewDto api2 = api2List.get(0);
+        List<RecommendationDto> apiList = Collections.singletonList(api);
+        List<Recommendation> entityList = mapper.fromListDto(apiList);
+        Recommendation entity = entityList.get(0);
+        List<RecommendationDto> api2List = mapper.toListDto(entityList);
+        RecommendationDto api2 = api2List.get(0);
 
         //then
         assertNotNull(mapper);
         assertEquals(apiList.size(), entityList.size());
         assertEquals(api.getProductId(), entity.getProductId());
-        assertEquals(api.getReviewId(), entity.getReviewId());
+        assertEquals(api.getRecommendationId(), entity.getRecommendationId());
         assertEquals(api.getAuthor(), entity.getAuthor());
-        assertEquals(api.getSubject(), entity.getSubject());
+        assertEquals(api.getRate(), entity.getRating());
         assertEquals(api.getContent(), entity.getContent());
         assertEquals(apiList.size(), api2List.size());
         assertEquals(api.getProductId(), api2.getProductId());
-        assertEquals(api.getReviewId(), api2.getReviewId());
+        assertEquals(api.getRecommendationId(), api2.getRecommendationId());
         assertEquals(api.getAuthor(), api2.getAuthor());
-        assertEquals(api.getSubject(), api2.getSubject());
+        assertEquals(api.getRate(), api2.getRate());
         assertEquals(api.getContent(), api2.getContent());
         assertNull(api2.getServiceAddress());
     }

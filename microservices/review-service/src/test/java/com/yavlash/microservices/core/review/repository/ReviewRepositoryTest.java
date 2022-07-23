@@ -1,7 +1,6 @@
-package com.yavlash.microservices.core.review;
+package com.yavlash.microservices.core.review.repository;
 
 import com.yavlash.microservices.core.review.entity.Review;
-import com.yavlash.microservices.core.review.repository.ReviewRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,7 @@ import static org.springframework.transaction.annotation.Propagation.NOT_SUPPORT
 @DataJpaTest
 @Transactional(propagation = NOT_SUPPORTED)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class PersistenceTests extends MySqlTestBase {
+class ReviewRepositoryTest extends MySqlTestBase {
 
     @Autowired
     private ReviewRepository repository;

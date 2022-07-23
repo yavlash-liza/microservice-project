@@ -1,8 +1,9 @@
-package com.yavlash.microservices.core.review;
+package com.yavlash.microservices.core.review.controller;
 
 import com.yavlash.api.dto.ReviewDto;
 import com.yavlash.api.event.Event;
-import com.yavlash.api.exceptions.InvalidInputException;
+import com.yavlash.api.exception.InvalidInputException;
+import com.yavlash.microservices.core.review.repository.MySqlTestBase;
 import com.yavlash.microservices.core.review.repository.ReviewRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +27,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
         "spring.cloud.stream.defaultBinder=rabbit",
         "logging.level.se.magnus=DEBUG",
         "eureka.client.enabled=false"})
-class ReviewServiceApplicationTests extends MySqlTestBase {
+class ReviewControllerApplicationTest extends MySqlTestBase {
     @Autowired
     private WebTestClient client;
 

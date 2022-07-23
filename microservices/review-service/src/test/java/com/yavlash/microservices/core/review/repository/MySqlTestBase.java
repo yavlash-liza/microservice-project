@@ -1,4 +1,4 @@
-package com.yavlash.microservices.core.review;
+package com.yavlash.microservices.core.review.repository;
 
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
