@@ -2,7 +2,7 @@ version: '2.9'
 
 services:
   product:
-    build: microservices/product-service
+    build: product-service
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -13,7 +13,7 @@ services:
         condition: service_healthy
 
   recommendation:
-    build: microservices/recommendation-service
+    build: recommendation-service
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -24,7 +24,7 @@ services:
         condition: service_healthy
 
   review:
-    build: microservices/review-service
+    build: review-service
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -35,7 +35,7 @@ services:
         condition: service_healthy
 
   product-composite:
-    build: microservices/product-composite-service
+    build: product-composite-service
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -84,7 +84,7 @@ services:
       retries: 60
 
   eureka:
-    build: spring-cloud/eureka-server
+    build: eureka-server
     mem_limit: 512m
     ports:
       - "8761:8761"
@@ -92,7 +92,7 @@ services:
   gateway:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-    build: spring-cloud/gateway
+    build: gateway
     mem_limit: 512m
     ports:
       - "8080:8080"
