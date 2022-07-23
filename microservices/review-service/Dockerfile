@@ -1,9 +1,9 @@
-FROM openjdk:17 as builder
+FROM eclipse-temurin:17-alpine as builder
 WORKDIR extracted
 ADD ./build/libs/*.jar app.jar
 RUN java -Djarmode=layertools -jar app.jar extract
 
-FROM openjdk:17
+FROM eclipse-temurin:17-alpine
 WORKDIR application
 COPY --from=builder extracted/dependencies/ ./
 COPY --from=builder extracted/spring-boot-loader/ ./
