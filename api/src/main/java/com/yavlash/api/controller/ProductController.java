@@ -10,7 +10,8 @@ public interface ProductController {
 
     @GetMapping(
             value = "/product/{productId}",
-            produces = "application/json")
+            produces = "application/json"
+    )
     Mono<ProductDto> getProduct(@PathVariable int productId);
 
     Mono<Void> deleteProduct(int productId);

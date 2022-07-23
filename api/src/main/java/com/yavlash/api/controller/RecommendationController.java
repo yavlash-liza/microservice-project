@@ -11,7 +11,8 @@ public interface RecommendationController {
 
     @GetMapping(
             value = "/recommendation",
-            produces = "application/json")
+            produces = "application/json"
+    )
     Flux<RecommendationDto> getRecommendations(
             @RequestParam(value = "productId", required = true) int productId);
 
