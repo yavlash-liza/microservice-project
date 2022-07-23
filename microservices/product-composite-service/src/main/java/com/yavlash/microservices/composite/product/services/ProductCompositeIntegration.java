@@ -8,8 +8,8 @@ import com.yavlash.api.dto.ProductDto;
 import com.yavlash.api.dto.RecommendationDto;
 import com.yavlash.api.dto.ReviewDto;
 import com.yavlash.api.event.Event;
-import com.yavlash.api.exceptions.InvalidInputException;
-import com.yavlash.api.exceptions.NotFoundException;
+import com.yavlash.api.exception.InvalidInputException;
+import com.yavlash.api.exception.NotFoundException;
 import com.yavlash.util.http.HttpErrorInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,63 +67,12 @@ public class ProductCompositeIntegration implements ProductController, Recommend
     public Mono<ProductDto> getProduct(int productId) {
         String url = PRODUCT_SERVICE_URL + "/product/" + productId;
         log.debug("Will call the getProduct API on URL: {}", url);
-        return webClient.get().uri(url).retrieve().bodyToMono(ProductDto.class).log(log.getName(), FINE).onErrorMap(WebClientResponseException.class, ex -> handleException(ex));
-    }
-
-    @Override
-    public Mono<Void> deleteProduct(int productId) {
-        return Mono.fromRunnable(() -> sendMessage("products-out-0", new Event(DELETE, productId, null)))
-                .subscribeOn(publishEventScheduler).then();
-    }
-
-    @Override
-    public Mono<RecommendationDto> createRecommendation(RecommendationDto body) {
-        return Mono.fromCallable(() -> {
-            sendMessage("recommendations-out-0", new Event(CREATE, body.getProductId(), body));
-            return body;
-        }).subscribeOn(publishEventScheduler);
-    }
-
-    @Override
-    public Flux<RecommendationDto> getRecommendations(int productId) {
-        String url = RECOMMENDATION_SERVICE_URL + "/recommendation?productId=" + productId;
-        log.debug("Will call the getRecommendations API on URL: {}", url);
-        return webClient.get().uri(url).retrieve().bodyToFlux(RecommendationDto.class).log(log.getName(), FINE).onErrorResume(error -> empty());
-    }
-
-    @Override
-    public Mono<Void> deleteRecommendations(int productId) {
-        return Mono.fromRunnable(() -> sendMessage("recommendations-out-0", new Event(DELETE, productId, null)))
-                .subscribeOn(publishEventScheduler).then();
-    }
-
-    @Override
-    public Mono<ReviewDto> createReview(ReviewDto body) {
-        return Mono.fromCallable(() -> {
-            sendMessage("reviews-out-0", new Event(CREATE, body.getProductId(), body));
-            return body;
-        }).subscribeOn(publishEventScheduler);
-    }
-
-    @Override
-    public Flux<ReviewDto> getReviews(int productId) {
-        String url = REVIEW_SERVICE_URL + "/review?productId=" + productId;
-        log.debug("Will call the getReviews API on URL: {}", url);
-        return webClient.get().uri(url).retrieve().bodyToFlux(ReviewDto.class).log(log.getName(), FINE).onErrorResume(error -> empty());
-    }
-
-    @Override
-    public Mono<Void> deleteReviews(int productId) {
-        return Mono.fromRunnable(() -> sendMessage("reviews-out-0", new Event(DELETE, productId, null)))
-                .subscribeOn(publishEventScheduler).then();
-    }
-
-    private void sendMessage(String bindingName, Event event) {
-        log.debug("Sending a {} message to {}", event.getEventType(), bindingName);
-        Message message = MessageBuilder.withPayload(event)
-                .setHeader("partitionKey", event.getKey())
-                .build();
-        streamBridge.send(bindingName, message);
+        return webClient.get()
+                .uri(url)
+                .retrieve()
+                .bodyToMono(ProductDto.class)
+                .log(log.getName(), FINE)
+                .onErrorMap(WebClientResponseException.class, ex -> handleException(ex));
     }
 
     private Throwable handleException(Throwable e) {
@@ -150,5 +99,71 @@ public class ProductCompositeIntegration implements ProductController, Recommend
         } catch (IOException ioex) {
             return ex.getMessage();
         }
+    }
+
+    @Override
+    public Mono<Void> deleteProduct(int productId) {
+        return Mono.fromRunnable(() -> sendMessage("products-out-0", new Event(DELETE, productId, null)))
+                .subscribeOn(publishEventScheduler).then();
+    }
+
+    @Override
+    public Mono<RecommendationDto> createRecommendation(RecommendationDto body) {
+        return Mono.fromCallable(() -> {
+            sendMessage("recommendations-out-0", new Event(CREATE, body.getProductId(), body));
+            return body;
+        }).subscribeOn(publishEventScheduler);
+    }
+
+    @Override
+    public Flux<RecommendationDto> getRecommendations(int productId) {
+        String url = RECOMMENDATION_SERVICE_URL + "/recommendation?productId=" + productId;
+        log.debug("Will call the getRecommendations API on URL: {}", url);
+        return webClient.get()
+                .uri(url)
+                .retrieve()
+                .bodyToFlux(RecommendationDto.class)
+                .log(log.getName(), FINE)
+                .onErrorResume(error -> empty());
+    }
+
+    @Override
+    public Mono<Void> deleteRecommendations(int productId) {
+        return Mono.fromRunnable(() -> sendMessage("recommendations-out-0", new Event(DELETE, productId, null)))
+                .subscribeOn(publishEventScheduler).then();
+    }
+
+    @Override
+    public Mono<ReviewDto> createReview(ReviewDto body) {
+        return Mono.fromCallable(() -> {
+            sendMessage("reviews-out-0", new Event(CREATE, body.getProductId(), body));
+            return body;
+        }).subscribeOn(publishEventScheduler);
+    }
+
+    @Override
+    public Flux<ReviewDto> getReviews(int productId) {
+        String url = REVIEW_SERVICE_URL + "/review?productId=" + productId;
+        log.debug("Will call the getReviews API on URL: {}", url);
+        return webClient.get()
+                .uri(url)
+                .retrieve()
+                .bodyToFlux(ReviewDto.class)
+                .log(log.getName(), FINE)
+                .onErrorResume(error -> empty());
+    }
+
+    @Override
+    public Mono<Void> deleteReviews(int productId) {
+        return Mono.fromRunnable(() -> sendMessage("reviews-out-0", new Event(DELETE, productId, null)))
+                .subscribeOn(publishEventScheduler).then();
+    }
+
+    private void sendMessage(String bindingName, Event event) {
+        log.debug("Sending a {} message to {}", event.getEventType(), bindingName);
+        Message message = MessageBuilder.withPayload(event)
+                .setHeader("partitionKey", event.getKey())
+                .build();
+        streamBridge.send(bindingName, message);
     }
 }

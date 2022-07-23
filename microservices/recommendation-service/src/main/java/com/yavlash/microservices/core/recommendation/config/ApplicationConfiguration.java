@@ -1,7 +1,7 @@
 package com.yavlash.microservices.core.recommendation.config;
 
 import com.yavlash.microservices.core.recommendation.entity.Recommendation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -15,10 +15,10 @@ import org.springframework.data.mongodb.core.mapping.MongoPersistentEntity;
 import org.springframework.data.mongodb.core.mapping.MongoPersistentProperty;
 
 @Configuration
+@RequiredArgsConstructor
 @ComponentScan("com.yavlash")
 public class ApplicationConfiguration {
-    @Autowired
-    ReactiveMongoOperations mongoTemplate;
+    private final ReactiveMongoOperations mongoTemplate;
 
     @EventListener(ContextRefreshedEvent.class)
     public void initIndicesAfterStartup() {

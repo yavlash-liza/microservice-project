@@ -3,23 +3,19 @@ package com.yavlash.microservices.core.product.config;
 import com.yavlash.api.controller.ProductController;
 import com.yavlash.api.dto.ProductDto;
 import com.yavlash.api.event.Event;
-import com.yavlash.api.exceptions.EventProcessingException;
+import com.yavlash.api.exception.EventProcessingException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.function.Consumer;
 
 @Slf4j
+@RequiredArgsConstructor
 @Configuration
 public class MessageProcessorConfig {
     private final ProductController productController;
-
-    @Autowired
-    public MessageProcessorConfig(ProductController productController) {
-        this.productController = productController;
-    }
 
     @Bean
     public Consumer<Event<Integer, ProductDto>> messageProcessor() {

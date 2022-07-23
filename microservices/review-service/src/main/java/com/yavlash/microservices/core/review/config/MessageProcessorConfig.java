@@ -3,23 +3,19 @@ package com.yavlash.microservices.core.review.config;
 import com.yavlash.api.controller.ReviewController;
 import com.yavlash.api.dto.ReviewDto;
 import com.yavlash.api.event.Event;
-import com.yavlash.api.exceptions.EventProcessingException;
+import com.yavlash.api.exception.EventProcessingException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.function.Consumer;
 
 @Slf4j
+@RequiredArgsConstructor
 @Configuration
 public class MessageProcessorConfig {
     private final ReviewController reviewService;
-
-    @Autowired
-    public MessageProcessorConfig(ReviewController reviewService) {
-        this.reviewService = reviewService;
-    }
 
     @Bean
     public Consumer<Event<Integer, ReviewDto>> messageProcessor() {

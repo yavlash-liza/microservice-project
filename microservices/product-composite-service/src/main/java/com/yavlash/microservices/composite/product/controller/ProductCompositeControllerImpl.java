@@ -10,8 +10,8 @@ import com.yavlash.api.dto.ReviewListDto;
 import com.yavlash.api.util.ServiceAddresses;
 import com.yavlash.microservices.composite.product.services.ProductCompositeIntegration;
 import com.yavlash.util.http.ServiceUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
@@ -22,49 +22,28 @@ import java.util.stream.Collectors;
 import static java.util.logging.Level.FINE;
 
 @Slf4j
+@RequiredArgsConstructor
 @RestController
 public class ProductCompositeControllerImpl implements ProductCompositeController {
     private final ServiceUtil serviceUtil;
     private final ProductCompositeIntegration integration;
-
-    @Autowired
-    public ProductCompositeControllerImpl(ServiceUtil serviceUtil, ProductCompositeIntegration integration) {
-        this.serviceUtil = serviceUtil;
-        this.integration = integration;
-    }
 
     @Override
     public Mono<Void> createProduct(ProductListDto body) {
         try {
             List<Mono> monoList = new ArrayList<>();
             log.debug("createCompositeProduct: creates a new composite entity for productId: {}", body.getProductId());
-            ProductDto productDto = new ProductDto()
-                    .setProductId(body.getProductId())
-                    .setName(body.getName())
-                    .setWeight(body.getWeight())
-                    .setServiceAddress(null);
+            ProductDto productDto = createProduct(body.getProductId(), body.getName(), body.getWeight());
             monoList.add(integration.createProduct(productDto));
             if (body.getRecommendations() != null) {
                 body.getRecommendations().forEach(r -> {
-                    RecommendationDto recommendationDto = new RecommendationDto()
-                            .setProductId(body.getProductId())
-                            .setRecommendationId(r.getRecommendationId())
-                            .setAuthor(r.getAuthor())
-                            .setRate(r.getRate())
-                            .setContent(r.getContent())
-                            .setServiceAddress(null);
+                    RecommendationDto recommendationDto = createRecommendation(body.getProductId(), r.getRecommendationId(), r.getAuthor(), r.getRate(), r.getContent());
                     monoList.add(integration.createRecommendation(recommendationDto));
                 });
             }
             if (body.getReviews() != null) {
                 body.getReviews().forEach(r -> {
-                    ReviewDto reviewDto = new ReviewDto()
-                            .setProductId(body.getProductId())
-                            .setReviewId(r.getReviewId())
-                            .setAuthor(r.getAuthor())
-                            .setSubject(r.getSubject())
-                            .setContent(r.getContent())
-                            .setServiceAddress(null);
+                    ReviewDto reviewDto = createReview(body.getProductId(), r.getReviewId(), r.getAuthor(), r.getSubject(), r.getContent());
                     monoList.add(integration.createReview(reviewDto));
                 });
             }
@@ -76,6 +55,34 @@ public class ProductCompositeControllerImpl implements ProductCompositeControlle
             log.warn("createCompositeProduct failed: {}", re.toString());
             throw re;
         }
+    }
+
+    private ProductDto createProduct(int productId, String name, int weight) {
+        return new ProductDto()
+                .setProductId(productId)
+                .setName(name)
+                .setWeight(weight)
+                .setServiceAddress(null);
+    }
+
+    private RecommendationDto createRecommendation(int productId, int recommendationId, String author, int rate, String content) {
+        return new RecommendationDto()
+                .setProductId(productId)
+                .setRecommendationId(recommendationId)
+                .setAuthor(author)
+                .setRate(rate)
+                .setContent(content)
+                .setServiceAddress(null);
+    }
+
+    private ReviewDto createReview(int productId, int reviewId, String author, String subject, String content) {
+        return new ReviewDto()
+                .setProductId(productId)
+                .setReviewId(reviewId)
+                .setAuthor(author)
+                .setSubject(subject)
+                .setContent(content)
+                .setServiceAddress(null);
     }
 
     @Override
@@ -111,7 +118,14 @@ public class ProductCompositeControllerImpl implements ProductCompositeControlle
         int productId = productDto.getProductId();
         String name = productDto.getName();
         int weight = productDto.getWeight();
-        List<RecommendationListDto> recommendationSummaries = (recommendationDtos == null) ? null :
+        List<RecommendationListDto> recommendationSummaries = createListRecommendationListDto(recommendationDtos);
+        List<ReviewListDto> reviewSummaries = createListReviewListDto(reviewDtos);
+        ServiceAddresses serviceAddresses = createServiceAddresses(productDto, recommendationDtos, reviewDtos, serviceAddress);
+        return createProductListDto(productId, name, weight, recommendationSummaries, reviewSummaries, serviceAddresses);
+    }
+
+    private List<RecommendationListDto> createListRecommendationListDto(List<RecommendationDto> recommendationDtos) {
+        return (recommendationDtos == null) ? null :
                 recommendationDtos.stream()
                         .map(r -> new RecommendationListDto()
                                 .setRecommendationId(r.getRecommendationId())
@@ -119,7 +133,10 @@ public class ProductCompositeControllerImpl implements ProductCompositeControlle
                                 .setRate(r.getRate())
                                 .setContent(r.getContent()))
                         .collect(Collectors.toList());
-        List<ReviewListDto> reviewSummaries = (reviewDtos == null) ? null :
+    }
+
+    private List<ReviewListDto> createListReviewListDto(List<ReviewDto> reviewDtos) {
+        return (reviewDtos == null) ? null :
                 reviewDtos.stream()
                         .map(r -> new ReviewListDto()
                                 .setReviewId(r.getReviewId())
@@ -127,14 +144,20 @@ public class ProductCompositeControllerImpl implements ProductCompositeControlle
                                 .setSubject(r.getSubject())
                                 .setContent(r.getContent()))
                         .collect(Collectors.toList());
+    }
+
+    private ServiceAddresses createServiceAddresses(ProductDto productDto, List<RecommendationDto> recommendationDtos, List<ReviewDto> reviewDtos, String serviceAddress) {
         String productAddress = productDto.getServiceAddress();
         String reviewAddress = (reviewDtos != null && reviewDtos.size() > 0) ? reviewDtos.get(0).getServiceAddress() : "";
         String recommendationAddress = (recommendationDtos != null && recommendationDtos.size() > 0) ? recommendationDtos.get(0).getServiceAddress() : "";
-        ServiceAddresses serviceAddresses = new ServiceAddresses()
+        return new ServiceAddresses()
                 .setCmp(serviceAddress)
                 .setPro(productAddress)
                 .setRev(reviewAddress)
                 .setRec(recommendationAddress);
+    }
+
+    private ProductListDto createProductListDto(int productId, String name, int weight, List<RecommendationListDto> recommendationSummaries, List<ReviewListDto> reviewSummaries, ServiceAddresses serviceAddresses) {
         return new ProductListDto()
                 .setProductId(productId)
                 .setName(name)

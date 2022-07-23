@@ -5,8 +5,8 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +17,7 @@ import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
 @Slf4j
+@RequiredArgsConstructor
 @Configuration
 @ComponentScan("com.yavlash")
 public class ApplicationConfiguration {
@@ -43,18 +44,10 @@ public class ApplicationConfiguration {
     @Value("${api.common.contact.email}")
     String apiContactEmail;
 
-    private final Integer threadPoolSize;
-    private final Integer taskQueueSize;
-
-    @Autowired
-    public ApplicationConfiguration(
-            @Value("${app.threadPoolSize:10}")
-                    Integer threadPoolSize,
-            @Value("${app.taskQueueSize:100}")
-                    Integer taskQueueSize) {
-        this.threadPoolSize = threadPoolSize;
-        this.taskQueueSize = taskQueueSize;
-    }
+    @Value("${app.threadPoolSize}")
+    private Integer threadPoolSize;
+    @Value("${app.taskQueueSize}")
+    private Integer taskQueueSize;
 
     @Bean
     public Scheduler publishEventScheduler() {

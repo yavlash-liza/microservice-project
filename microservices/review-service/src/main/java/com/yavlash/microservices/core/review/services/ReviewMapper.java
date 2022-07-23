@@ -10,13 +10,13 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface ReviewMapper {
     @Mapping(target = "serviceAddress", ignore = true)
-    ReviewDto entityToApi(Review entity);
+    ReviewDto toDto(Review entity);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "version", ignore = true)
-    Review apiToEntity(ReviewDto api);
+    Review fromDto(ReviewDto api);
 
-    List<ReviewDto> entityListToApiList(List<Review> entity);
+    List<ReviewDto> toListDto(List<Review> entity);
 
-    List<Review> apiListToEntityList(List<ReviewDto> api);
+    List<Review> fromListDto(List<ReviewDto> api);
 }

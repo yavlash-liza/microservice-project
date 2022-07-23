@@ -2,7 +2,7 @@ package com.yavlash.microservices.core.review.controller;
 
 import com.yavlash.api.controller.ReviewController;
 import com.yavlash.api.dto.ReviewDto;
-import com.yavlash.api.exceptions.InvalidInputException;
+import com.yavlash.api.exception.InvalidInputException;
 import com.yavlash.microservices.core.review.services.ReviewService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

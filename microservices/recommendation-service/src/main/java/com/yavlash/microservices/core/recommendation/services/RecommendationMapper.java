@@ -11,14 +11,14 @@ import java.util.List;
 public interface RecommendationMapper {
     @Mapping(target = "rate", source = "entity.rating")
     @Mapping(target = "serviceAddress", ignore = true)
-    RecommendationDto entityToApi(Recommendation entity);
+    RecommendationDto toDto(Recommendation entity);
 
     @Mapping(target = "rating", source = "api.rate")
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "version", ignore = true)
-    Recommendation apiToEntity(RecommendationDto api);
+    Recommendation fromDto(RecommendationDto api);
 
-    List<RecommendationDto> entityListToApiList(List<Recommendation> entity);
+    List<RecommendationDto> toListDto(List<Recommendation> entity);
 
-    List<Recommendation> apiListToEntityList(List<RecommendationDto> api);
+    List<Recommendation> fromListDto(List<RecommendationDto> api);
 }

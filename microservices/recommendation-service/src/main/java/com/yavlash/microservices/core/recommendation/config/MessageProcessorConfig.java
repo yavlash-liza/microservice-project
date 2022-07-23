@@ -3,23 +3,19 @@ package com.yavlash.microservices.core.recommendation.config;
 import com.yavlash.api.controller.RecommendationController;
 import com.yavlash.api.dto.RecommendationDto;
 import com.yavlash.api.event.Event;
-import com.yavlash.api.exceptions.EventProcessingException;
+import com.yavlash.api.exception.EventProcessingException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.function.Consumer;
 
 @Slf4j
+@RequiredArgsConstructor
 @Configuration
 public class MessageProcessorConfig {
     private final RecommendationController recommendationController;
-
-    @Autowired
-    public MessageProcessorConfig(RecommendationController recommendationController) {
-        this.recommendationController = recommendationController;
-    }
 
     @Bean
     public Consumer<Event<Integer, RecommendationDto>> messageProcessor() {
