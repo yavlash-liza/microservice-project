@@ -70,7 +70,10 @@ server.error.include-message: always
 
 spring.application.name: product-composite
 
-app.eureka-server: localhost
+app:
+  eureka-server: localhost
+  threadPoolSize: 10
+  taskQueueSize: 100
 
 eureka:
   client:
@@ -106,8 +109,6 @@ spring.cloud.stream.kafka.binder:
 spring.rabbitmq:
   host: 127.0.0.1
   port: 5672
-#  username: guest
-#  password: guest
 
 logging:
   level:
@@ -121,7 +122,10 @@ spring.config.activate.on-profile: docker
 
 server.port: 8080
 
-app.eureka-server: eureka
+app:
+  eureka-server: eureka
+  threadPoolSize: 10
+  taskQueueSize: 100
 
 spring.rabbitmq.host: rabbitmq
 
