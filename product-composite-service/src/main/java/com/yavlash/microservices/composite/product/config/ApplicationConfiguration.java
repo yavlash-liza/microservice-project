@@ -79,4 +79,9 @@ public class ApplicationConfiguration {
     public WebClient.Builder loadBalancedWebClientBuilder() {
         return WebClient.builder();
     }
+
+    @Bean
+    public WebClient instanceOfWebClient(WebClient.Builder webClientBuilder) {
+        return webClientBuilder.build();
+    }
 }

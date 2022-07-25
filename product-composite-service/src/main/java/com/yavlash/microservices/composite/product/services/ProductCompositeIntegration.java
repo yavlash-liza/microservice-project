@@ -11,6 +11,7 @@ import com.yavlash.api.event.Event;
 import com.yavlash.api.exception.InvalidInputException;
 import com.yavlash.api.exception.NotFoundException;
 import com.yavlash.util.http.HttpErrorInfo;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -32,28 +33,19 @@ import static java.util.logging.Level.FINE;
 import static reactor.core.publisher.Flux.empty;
 
 @Slf4j
+@RequiredArgsConstructor
 @Component
 public class ProductCompositeIntegration implements ProductController, RecommendationController, ReviewController {
     private static final String PRODUCT_SERVICE_URL = "http://product";
     private static final String RECOMMENDATION_SERVICE_URL = "http://recommendation";
     private static final String REVIEW_SERVICE_URL = "http://review";
-    private final Scheduler publishEventScheduler;
+
+    @Autowired
+    @Qualifier("publishEventScheduler")
+    private Scheduler publishEventScheduler;
     private final WebClient webClient;
     private final ObjectMapper mapper;
     private final StreamBridge streamBridge;
-
-    @Autowired
-    public ProductCompositeIntegration(
-            @Qualifier("publishEventScheduler") Scheduler publishEventScheduler,
-            WebClient.Builder webClientBuilder,
-            ObjectMapper mapper,
-            StreamBridge streamBridge
-    ) {
-        this.webClient = webClientBuilder.build();
-        this.publishEventScheduler = publishEventScheduler;
-        this.mapper = mapper;
-        this.streamBridge = streamBridge;
-    }
 
     @Override
     public Mono<ProductDto> createProduct(ProductDto body) {
