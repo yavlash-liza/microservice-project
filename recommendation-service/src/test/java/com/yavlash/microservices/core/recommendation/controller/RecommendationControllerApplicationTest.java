@@ -144,12 +144,18 @@ class RecommendationControllerApplicationTest extends MongoDbTestBase {
                 .setRate(recommendationId)
                 .setContent("Content " + recommendationId)
                 .setServiceAddress("SA");
-        Event<Integer, RecommendationDto> event = new Event(CREATE, productId, recommendationDto);
+        Event<Integer, RecommendationDto> event = new Event()
+                .setEventType(CREATE)
+                .setKey(productId)
+                .setData(recommendationDto);
         messageProcessor.accept(event);
     }
 
     private void sendDeleteRecommendationEvent(int productId) {
-        Event<Integer, RecommendationDto> event = new Event(DELETE, productId, null);
+        Event<Integer, RecommendationDto> event = new Event()
+                .setEventType(DELETE)
+                .setKey(productId)
+                .setData(null);
         messageProcessor.accept(event);
     }
 }

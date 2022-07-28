@@ -20,10 +20,22 @@ public class IsSameEventTests {
     void testEventObjectCompare() throws JsonProcessingException {
         //given
         String name = "name";
-        Event<Integer, ProductDto> event1 = new Event<>(CREATE, 1, new ProductDto().setProductId(1).setName(name).setWeight(1).setServiceAddress(null));
-        Event<Integer, ProductDto> event2 = new Event<>(CREATE, 1, new ProductDto().setProductId(1).setName(name).setWeight(1).setServiceAddress(null));
-        Event<Integer, ProductDto> event3 = new Event<>(DELETE, 1, null);
-        Event<Integer, ProductDto> event4 = new Event<>(CREATE, 1, new ProductDto().setProductId(2).setName(name).setWeight(1).setServiceAddress(null));
+        Event<Integer, ProductDto> event1 = new Event()
+                .setEventType(CREATE)
+                .setKey(1)
+                .setData(new ProductDto().setProductId(1).setName(name).setWeight(1).setServiceAddress(null));
+        Event<Integer, ProductDto> event2 = new Event()
+                .setEventType(CREATE)
+                .setKey(1)
+                .setData(new ProductDto().setProductId(1).setName(name).setWeight(1).setServiceAddress(null));
+        Event<Integer, ProductDto> event3 = new Event()
+                .setEventType(DELETE)
+                .setKey(1)
+                .setData(null);
+        Event<Integer, ProductDto> event4 = new Event()
+                .setEventType(CREATE)
+                .setKey(1)
+                .setData(new ProductDto().setProductId(2).setName(name).setWeight(1).setServiceAddress(null));
 
         //when
         String event1Json = mapper.writeValueAsString(event1);

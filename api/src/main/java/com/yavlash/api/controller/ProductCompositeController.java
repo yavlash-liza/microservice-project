@@ -23,20 +23,11 @@ public interface ProductCompositeController {
             description = "${api.product-composite.create-composite-product.notes}"
     )
     @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "${api.responseCodes.badRequest.description}"
-            ),
-            @ApiResponse(
-                    responseCode = "422",
-                    description = "${api.responseCodes.unprocessableEntity.description}"
-            )
+            @ApiResponse(responseCode = "400", description = "${api.responseCodes.badRequest.description}"),
+            @ApiResponse(responseCode = "422", description = "${api.responseCodes.unprocessableEntity.description}")
     })
     @ResponseStatus(HttpStatus.ACCEPTED)
-    @PostMapping(
-            value = "/product-composite",
-            consumes = "application/json"
-    )
+    @PostMapping(value = "/product-composite")
     Mono<Void> createProduct(@RequestBody ProductListDto body);
 
     @Operation(
@@ -44,27 +35,12 @@ public interface ProductCompositeController {
             description = "${api.product-composite.get-composite-product.notes}"
     )
     @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "${api.responseCodes.ok.description}"
-            ),
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "${api.responseCodes.badRequest.description}"
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "${api.responseCodes.notFound.description}"
-            ),
-            @ApiResponse(
-                    responseCode = "422",
-                    description = "${api.responseCodes.unprocessableEntity.description}"
-            )
+            @ApiResponse(responseCode = "200", description = "${api.responseCodes.ok.description}"),
+            @ApiResponse(responseCode = "400", description = "${api.responseCodes.badRequest.description}"),
+            @ApiResponse(responseCode = "404", description = "${api.responseCodes.notFound.description}"),
+            @ApiResponse(responseCode = "422", description = "${api.responseCodes.unprocessableEntity.description}")
     })
-    @GetMapping(
-            value = "/product-composite/{productId}",
-            produces = "application/json"
-    )
+    @GetMapping(value = "/product-composite/{productId}")
     Mono<ProductListDto> getProduct(@PathVariable int productId);
 
     @Operation(
@@ -72,14 +48,8 @@ public interface ProductCompositeController {
             description = "${api.product-composite.delete-composite-product.notes}"
     )
     @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "${api.responseCodes.badRequest.description}"
-            ),
-            @ApiResponse(
-                    responseCode = "422",
-                    description = "${api.responseCodes.unprocessableEntity.description}"
-            )
+            @ApiResponse(responseCode = "400", description = "${api.responseCodes.badRequest.description}"),
+            @ApiResponse(responseCode = "422", description = "${api.responseCodes.unprocessableEntity.description}")
     })
     @ResponseStatus(HttpStatus.ACCEPTED)
     @DeleteMapping(value = "/product-composite/{productId}")

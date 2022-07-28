@@ -9,10 +9,7 @@ import reactor.core.publisher.Mono;
 public interface RecommendationController {
     Mono<RecommendationDto> createRecommendation(RecommendationDto body);
 
-    @GetMapping(
-            value = "/recommendation",
-            produces = "application/json"
-    )
+    @GetMapping(value = "/recommendation")
     Flux<RecommendationDto> getRecommendations(
             @RequestParam(value = "productId", required = true) int productId);
 

@@ -10,16 +10,10 @@ import reactor.core.publisher.Mono;
 
 public interface ReviewController {
 
-    @PostMapping(
-            value = "/review",
-            consumes = "application/json"
-    )
+    @PostMapping(value = "/review")
     Mono<ReviewDto> createReview(@RequestBody ReviewDto body);
 
-    @GetMapping(
-            value = "/review",
-            produces = "application/json"
-    )
+    @GetMapping(value = "/review")
     Flux<ReviewDto> getReviews(@RequestParam(value = "productId", required = true) int productId);
 
     Mono<Void> deleteReviews(int productId);

@@ -135,12 +135,18 @@ class ProductControllerApplicationTest extends MongoDbTestBase {
                 .setName("Name " + productId)
                 .setWeight(productId)
                 .setServiceAddress("SA");
-        Event<Integer, ProductDto> event = new Event(CREATE, productId, productDto);
+        Event<Integer, ProductDto> event = new Event()
+                .setEventType(CREATE)
+                .setKey(productId)
+                .setData(productDto);
         messageProcessor.accept(event);
     }
 
     private void sendDeleteProductEvent(int productId) {
-        Event<Integer, ProductDto> event = new Event(DELETE, productId, null);
+        Event<Integer, ProductDto> event = new Event()
+                .setEventType(DELETE)
+                .setKey(productId)
+                .setData(null);
         messageProcessor.accept(event);
     }
 }

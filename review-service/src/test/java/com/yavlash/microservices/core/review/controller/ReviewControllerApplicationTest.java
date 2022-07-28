@@ -148,12 +148,18 @@ class ReviewControllerApplicationTest extends MySqlTestBase {
                 .setSubject("Subject " + reviewId)
                 .setContent("Content " + reviewId)
                 .setServiceAddress("SA");
-        Event<Integer, ReviewDto> event = new Event(CREATE, productId, reviewDto);
+        Event<Integer, ReviewDto> event = new Event()
+                .setEventType(CREATE)
+                .setKey(productId)
+                .setData(reviewDto);
         messageProcessor.accept(event);
     }
 
     private void sendDeleteReviewEvent(int productId) {
-        Event<Integer, ReviewDto> event = new Event(DELETE, productId, null);
+        Event<Integer, ReviewDto> event = new Event()
+                .setEventType(DELETE)
+                .setKey(productId)
+                .setData(null);
         messageProcessor.accept(event);
     }
 }

@@ -74,8 +74,10 @@ class MessagingTests {
         //when && then
         assertEquals(1, productMessages.size());
 
-        Event<Integer, ProductDto> expectedEvent =
-                new Event(CREATE, composite.getProductId(), new ProductDto()
+        Event<Integer, ProductDto> expectedEvent = new Event()
+                .setEventType(CREATE)
+                .setKey(composite.getProductId())
+                .setData(new ProductDto()
                         .setProductId(composite.getProductId())
                         .setName(composite.getName())
                         .setWeight(composite.getWeight())
@@ -107,8 +109,10 @@ class MessagingTests {
         //when && then
         assertEquals(1, productMessages.size());
 
-        Event<Integer, ProductDto> expectedProductEvent =
-                new Event(CREATE, composite.getProductId(), new ProductDto()
+        Event<Integer, ProductDto> expectedProductEvent = new Event()
+                .setEventType(CREATE)
+                .setKey(composite.getProductId())
+                .setData(new ProductDto()
                         .setProductId(composite.getProductId())
                         .setName(composite.getName())
                         .setWeight(composite.getWeight())
@@ -117,21 +121,24 @@ class MessagingTests {
         assertEquals(1, recommendationMessages.size());
 
         RecommendationListDto rec = composite.getRecommendations().get(0);
-        Event<Integer, ProductDto> expectedRecommendationEvent =
-                new Event(CREATE, composite.getProductId(),
-                        new RecommendationDto()
-                                .setProductId(composite.getProductId())
-                                .setRecommendationId(rec.getRecommendationId())
-                                .setAuthor(rec.getAuthor())
-                                .setRate(rec.getRate())
-                                .setContent(rec.getContent())
-                                .setServiceAddress(null));
+        Event<Integer, ProductDto> expectedRecommendationEvent = new Event()
+                .setEventType(CREATE)
+                .setKey(composite.getProductId())
+                .setData(new RecommendationDto()
+                        .setProductId(composite.getProductId())
+                        .setRecommendationId(rec.getRecommendationId())
+                        .setAuthor(rec.getAuthor())
+                        .setRate(rec.getRate())
+                        .setContent(rec.getContent())
+                        .setServiceAddress(null));
         assertThat(recommendationMessages.get(0), is(sameEventExceptCreatedAt(expectedRecommendationEvent)));
         assertEquals(1, reviewMessages.size());
 
         ReviewListDto rev = composite.getReviews().get(0);
-        Event<Integer, ProductDto> expectedReviewEvent =
-                new Event(CREATE, composite.getProductId(), new ReviewDto()
+        Event<Integer, ProductDto> expectedReviewEvent = new Event()
+                .setEventType(CREATE)
+                .setKey(composite.getProductId())
+                .setData(new ReviewDto()
                         .setProductId(composite.getProductId())
                         .setReviewId(rev.getReviewId())
                         .setAuthor(rev.getAuthor())
@@ -151,17 +158,26 @@ class MessagingTests {
 
         assertEquals(1, productMessages.size());
 
-        Event<Integer, ProductDto> expectedProductEvent = new Event(DELETE, 1, null);
+        Event<Integer, ProductDto> expectedProductEvent = new Event()
+                .setEventType(DELETE)
+                .setKey(1)
+                .setData(null);
         assertThat(productMessages.get(0), is(sameEventExceptCreatedAt(expectedProductEvent)));
 
         assertEquals(1, recommendationMessages.size());
 
-        Event<Integer, ProductDto> expectedRecommendationEvent = new Event(DELETE, 1, null);
+        Event<Integer, ProductDto> expectedRecommendationEvent = new Event()
+                .setEventType(DELETE)
+                .setKey(1)
+                .setData(null);
         assertThat(recommendationMessages.get(0), is(sameEventExceptCreatedAt(expectedRecommendationEvent)));
 
         assertEquals(1, reviewMessages.size());
 
-        Event<Integer, ProductDto> expectedReviewEvent = new Event(DELETE, 1, null);
+        Event<Integer, ProductDto> expectedReviewEvent = new Event()
+                .setEventType(DELETE)
+                .setKey(1)
+                .setData(null);
         assertThat(reviewMessages.get(0), is(sameEventExceptCreatedAt(expectedReviewEvent)));
     }
 

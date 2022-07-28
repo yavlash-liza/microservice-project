@@ -8,10 +8,7 @@ import reactor.core.publisher.Mono;
 public interface ProductController {
     Mono<ProductDto> createProduct(ProductDto body);
 
-    @GetMapping(
-            value = "/product/{productId}",
-            produces = "application/json"
-    )
+    @GetMapping(value = "/product/{productId}")
     Mono<ProductDto> getProduct(@PathVariable int productId);
 
     Mono<Void> deleteProduct(int productId);
