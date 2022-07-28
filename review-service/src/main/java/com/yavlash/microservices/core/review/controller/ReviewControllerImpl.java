@@ -6,8 +6,6 @@ import com.yavlash.api.exception.InvalidInputException;
 import com.yavlash.microservices.core.review.services.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -20,10 +18,7 @@ import static java.util.logging.Level.FINE;
 @RestController
 public class ReviewControllerImpl implements ReviewController {
     private final ReviewService service;
-
-    @Autowired
-    @Qualifier("jdbcScheduler")
-    private Scheduler jdbcScheduler;
+    private final Scheduler jdbcScheduler;
 
     @Override
     public Mono<ReviewDto> createReview(ReviewDto body) {

@@ -13,8 +13,6 @@ import com.yavlash.api.exception.NotFoundException;
 import com.yavlash.util.http.HttpErrorInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
@@ -40,9 +38,7 @@ public class ProductCompositeIntegration implements ProductController, Recommend
     private static final String RECOMMENDATION_SERVICE_URL = "http://recommendation";
     private static final String REVIEW_SERVICE_URL = "http://review";
 
-    @Autowired
-    @Qualifier("publishEventScheduler")
-    private Scheduler publishEventScheduler;
+    private final Scheduler publishEventScheduler;
     private final WebClient webClient;
     private final ObjectMapper mapper;
     private final StreamBridge streamBridge;
@@ -50,7 +46,10 @@ public class ProductCompositeIntegration implements ProductController, Recommend
     @Override
     public Mono<ProductDto> createProduct(ProductDto body) {
         return Mono.fromCallable(() -> {
-            sendMessage("products-out-0", new Event(CREATE, body.getProductId(), body));
+            sendMessage("products-out-0", new Event()
+                            .setEventType(CREATE)
+                            .setKey(body.getProductId())
+                            .setData(body));
             return body;
         }).subscribeOn(publishEventScheduler);
     }
@@ -72,11 +71,11 @@ public class ProductCompositeIntegration implements ProductController, Recommend
             log.warn("Got a unexpected error: {}, will rethrow it", e.toString());
             return e;
         }
-        WebClientResponseException wcre = (WebClientResponseException)e;
+        WebClientResponseException wcre = (WebClientResponseException) e;
         switch (wcre.getStatusCode()) {
             case NOT_FOUND:
                 return new NotFoundException(getErrorMessage(wcre));
-            case UNPROCESSABLE_ENTITY :
+            case UNPROCESSABLE_ENTITY:
                 return new InvalidInputException(getErrorMessage(wcre));
             default:
                 log.warn("Got an unexpected HTTP error: {}, will rethrow it", wcre.getStatusCode());
@@ -95,14 +94,20 @@ public class ProductCompositeIntegration implements ProductController, Recommend
 
     @Override
     public Mono<Void> deleteProduct(int productId) {
-        return Mono.fromRunnable(() -> sendMessage("products-out-0", new Event(DELETE, productId, null)))
+        return Mono.fromRunnable(() -> sendMessage("products-out-0", new Event()
+                .setEventType(DELETE)
+                .setKey(productId)
+                .setData(null)))
                 .subscribeOn(publishEventScheduler).then();
     }
 
     @Override
     public Mono<RecommendationDto> createRecommendation(RecommendationDto body) {
         return Mono.fromCallable(() -> {
-            sendMessage("recommendations-out-0", new Event(CREATE, body.getProductId(), body));
+            sendMessage("recommendations-out-0", new Event()
+                    .setEventType(CREATE)
+                    .setKey(body.getProductId())
+                    .setData(body));
             return body;
         }).subscribeOn(publishEventScheduler);
     }
@@ -121,14 +126,20 @@ public class ProductCompositeIntegration implements ProductController, Recommend
 
     @Override
     public Mono<Void> deleteRecommendations(int productId) {
-        return Mono.fromRunnable(() -> sendMessage("recommendations-out-0", new Event(DELETE, productId, null)))
+        return Mono.fromRunnable(() -> sendMessage("recommendations-out-0", new Event()
+                .setEventType(DELETE)
+                .setKey(productId)
+                .setData(null)))
                 .subscribeOn(publishEventScheduler).then();
     }
 
     @Override
     public Mono<ReviewDto> createReview(ReviewDto body) {
         return Mono.fromCallable(() -> {
-            sendMessage("reviews-out-0", new Event(CREATE, body.getProductId(), body));
+            sendMessage("reviews-out-0", new Event()
+                    .setEventType(CREATE)
+                    .setKey(body.getProductId())
+                    .setData(body));
             return body;
         }).subscribeOn(publishEventScheduler);
     }
@@ -147,7 +158,10 @@ public class ProductCompositeIntegration implements ProductController, Recommend
 
     @Override
     public Mono<Void> deleteReviews(int productId) {
-        return Mono.fromRunnable(() -> sendMessage("reviews-out-0", new Event(DELETE, productId, null)))
+        return Mono.fromRunnable(() -> sendMessage("reviews-out-0", new Event()
+                .setEventType(DELETE)
+                .setKey(productId)
+                .setData(null)))
                 .subscribeOn(publishEventScheduler).then();
     }
 
