@@ -2,7 +2,7 @@ version: '2.9'
 
 services:
   product:
-    build: microservices/product-service
+    build: product-service
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker,streaming_partitioned,streaming_instance_0,kafka
@@ -13,7 +13,7 @@ services:
         condition: service_started
 
   product-p1:
-    build: microservices/product-service
+    build: product-service
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker,streaming_partitioned,streaming_instance_1,kafka
@@ -24,7 +24,7 @@ services:
         condition: service_started
 
   recommendation:
-    build: microservices/recommendation-service
+    build: recommendation-service
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker,streaming_partitioned,streaming_instance_0,kafka
@@ -35,7 +35,7 @@ services:
         condition: service_started
 
   recommendation-p1:
-    build: microservices/recommendation-service
+    build: recommendation-service
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker,streaming_partitioned,streaming_instance_1,kafka
@@ -46,7 +46,7 @@ services:
         condition: service_started
 
   review:
-    build: microservices/review-service
+    build: review-service
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker,streaming_partitioned,streaming_instance_0,kafka
@@ -57,7 +57,7 @@ services:
         condition: service_started
 
   review-p1:
-    build: microservices/review-service
+    build: review-service
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker,streaming_partitioned,streaming_instance_1,kafka
@@ -68,10 +68,8 @@ services:
         condition: service_started
 
   product-composite:
-    build: microservices/product-composite-service
+    build: product-composite-service
     mem_limit: 512m
-    ports:
-      - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker,streaming_partitioned,kafka
     depends_on:
@@ -127,7 +125,13 @@ services:
       - KAFKA_ADVERTISED_HOST_NAME=zookeeper
 
   eureka:
-    build: spring-cloud/eureka-server
+    build: eureka-server
+    mem_limit: 512m
+
+  gateway:
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    build: gateway
     mem_limit: 512m
     ports:
-      - "8761:8761"
+      - "8080:8080"
